@@ -9,10 +9,10 @@ and auditing changes to database tables.
 
 * Different row version are accessed through scoping.
 
-* Applications can use Mfly to time-warp all tables to previous
+* Applications can use Mcfly to time-warp all tables to previous
   states.
   
-* Implemented as database triggers.  So, the verioning system is
+* Implemented as database triggers.  So, the versioning system is
   language/platform agnostic.
 
 ## Installation
@@ -93,7 +93,7 @@ Currently, Mcfly only works with PostgreSQL databases.
 ## History
 
 The database table versioning mechanism used in Mcfly was originally
-developed at [TWINSUN][]. It has since been modified and enhaced at
+developed at [TWINSUN][]. It has since been modified and enhanced at
 [PENNYMAC][].
 
 ## License
