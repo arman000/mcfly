@@ -1,0 +1,17 @@
+common: &common
+  adapter: postgresql
+  username: arman
+  password: arman
+  host: localhost
+
+production:
+  <<: *common
+  database: mcfly_prod
+
+development:
+  <<: *common
+  database: mcfly_dev
+
+test:
+  <<: *common
+  database: mcfly_test
