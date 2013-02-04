@@ -1,17 +1,24 @@
 # Mcfly
 
 Mcfly is a database table versioning system.  It's useful for tracking
-and auditing changes to database tables.
+and auditing changes to database tables.  It's also very easy to
+access the current state of Mcfly tables at any point in time.
+
+![](http://i.imgur.com/IG77ww0.jpg)
 
 ## Features
 
 * All row versions are stored in the same table.
 
-* Different row version are accessed through scoping.
+* Different row versions are accessed through scoping.
 
 * Applications can use Mcfly to time-warp all tables to previous
-  states.
+  points in time.
   
+* Table queries for points in time are symmetric. i.e. queries to
+  access data in the present look just like queries available in any
+  particular point in time.
+
 * Implemented as database triggers.  So, the versioning system is
   language/platform agnostic.
 

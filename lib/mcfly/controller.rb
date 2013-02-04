@@ -1,6 +1,5 @@
 module Mcfly
   module Controller
-
     def self.included(base)
       base.before_filter :set_mcfly_whodunnit
     end
@@ -18,6 +17,5 @@ module Mcfly
     def set_mcfly_whodunnit
       ::Mcfly.whodunnit = user_for_mcfly
     end
-
   end
 end
