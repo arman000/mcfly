@@ -34,11 +34,17 @@ module McFly
       end
 
       def mcfly_validates_uniqueness_of(*attr_names)
-        # add :obsoleted_dt to the uniqueness scope
+        # Set MCFLY_UNIQUENESS class constant to the args passed.
+        # This is useful for introspection.  FIXME: won't work if
+        # mcfly_validates_uniqueness_of is called multiple times on
+        # the same class.
+        self.const_set(:MCFLY_UNIQUENESS, attr_names)
 
         attr_names << {} unless attr_names.last.is_a?(Hash)
 
         attr_names.last[:scope] ||= []
+
+        # add :obsoleted_dt to the uniqueness scope
         attr_names.last[:scope] << :obsoleted_dt
         
         # Set uniqueness error message if not set.  FIXME: need to
