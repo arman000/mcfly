@@ -2,7 +2,7 @@
 
 Mcfly is a database table versioning system.  It's useful for tracking
 and auditing changes to database tables.  It's also very easy to
-access the current state of Mcfly tables at any point in time.
+access the state of Mcfly tables at any point in its history.
 
 ![](http://i.imgur.com/IG77ww0.jpg)
 
@@ -50,16 +50,15 @@ of the usual `ActiveRecord::Migration`.
           t.decimal :coupon, null: false
           t.integer :settlement_mm, null: false
           t.integer :settlement_yy, null: false
-          # NULL indicates unknown price
           t.decimal :price
         end
       end
     end
 
-These migration add the necessary versioning triggers for INSERT,
+These migrations add the necessary versioning triggers for INSERT,
 UPDATE and DELETE operations.  The append-only migration disallows
-updates.  As such, append-only Mcfly tables rows to be INSERTed or
-DELETEed, but not modified.
+updates.  As such, append-only Mcfly tables allow rows to be INSERTed
+or DELETEed, but not modified.
 
 When you declare `has_mcfly` in your model, Mcfly adds some basic
 functionality to the class.
@@ -81,13 +80,10 @@ functionality to the class.
       end
     end
 
-The `has_mcfly` declaration provides the `mcfly_lookup` generator
-which is scopes queries to the proper timeline.  Also,
-`mcfly_validates_uniqueness_of` is Mcfly's scoped version of
-ActiveRecord's `validates_uniqueness_of`.
+The `has_mcfly` declaration provides the `mcfly_lookup` generator which scopes queries to the proper timeline.  Also, `mcfly_validates_uniqueness_of` is Mcfly's scoped version of ActiveRecord's `validates_uniqueness_of`.
 
-... TODO ... show examples of adding rows and accessing versions of
-data ...
+## Setting/Finding Responsible Party For A Change
+TODO: discuss using `current_user` method in `ApplicationController`. Also, setting `Mcfly.whodunnit`.
 
 ## Implementation
 

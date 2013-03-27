@@ -24,11 +24,10 @@ module McFly
       end
 
       def mcfly_lookup(name, options = {}, &block)
-        delorean_fn(name, options) do |t, *args|
-          raise "time cannot be nil" if t.nil?
-          ts = (t == Float::INFINITY) ? 'infinity' : t
+        delorean_fn(name, options) do |ts, *args|
+          raise "time cannot be nil" if ts.nil?
           self.where("obsoleted_dt >= ? AND created_dt < ?", ts, ts).scoping do
-            block.call(t, *args)
+            block.call(ts, *args)
           end
         end
       end
