@@ -18,4 +18,6 @@ tmp
 *~
 *.komodoproject
 .rvmrc
+.ruby-version
+.ruby-gemset
 spec/dummy/log
