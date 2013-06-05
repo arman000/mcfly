@@ -3,6 +3,22 @@ require 'delorean_lang'
 module McFly
   module Model
     
+    class AssociationValidator < ActiveModel::Validator
+      VALSET = Set[nil, Float::INFINITY, 'infinity']
+
+      def validate(entry)
+        raise "need field option" unless options[:field]
+        field = options[:field].to_sym
+        value = entry.send(field)
+
+        return if value.nil?
+
+        unless VALSET.member?(value.obsoleted_dt)
+          entry.errors[field] = "Obsoleted association value!"
+        end
+      end
+    end
+
     def self.included(base)
       base.send :extend, ClassMethods
     end
@@ -53,6 +69,12 @@ module McFly
 
         validates_uniqueness_of(*attr_names)
       end
+
+      def mcfly_belongs_to(name, options = {})
+        validates_with McFly::Model::AssociationValidator, field: name
+        belongs_to(name, options)
+      end
+
     end
 
     module InstanceMethods
