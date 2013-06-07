@@ -89,9 +89,14 @@ TODO: discuss using `current_user` method in `ApplicationController`. Also, sett
 
 TODO
 
-## Limitations
+## Limitations/Requirements
 
-Currently, Mcfly only works with PostgreSQL databases.
+Currently, Mcfly only works with PostgreSQL databases. The following
+line must be added to the `postgresql.conf` file.  Mcfly uses the
+PostgreSQL session variable `mcfly.whodunnit` to store the current
+user id.
+
+    custom_variable_classes = 'mcfly'
 
 ## History
 

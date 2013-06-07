@@ -18,6 +18,7 @@ ActiveRecord::Schema.define(:version => 2) do
     t.datetime "created_dt",             :null => false
     t.datetime "obsoleted_dt",           :null => false
     t.integer  "user_id",                :null => false
+    t.integer  "o_user_id"
     t.integer  "security_instrument_id", :null => false
     t.decimal  "coupon",                 :null => false
     t.integer  "settlement_mm",          :null => false
@@ -30,6 +31,7 @@ ActiveRecord::Schema.define(:version => 2) do
     t.datetime "created_dt",                    :null => false
     t.datetime "obsoleted_dt",                  :null => false
     t.integer  "user_id",                       :null => false
+    t.integer  "o_user_id"
     t.string   "name",                          :null => false
     t.string   "settlement_class", :limit => 1, :null => false
   end

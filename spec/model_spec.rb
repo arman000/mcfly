@@ -182,7 +182,7 @@ describe "Mcfly" do
 
   it "should be able to delete objects" do
     si = SecurityInstrument.find_by_name("FN Fix-30 Cash")
-    dt = DateTime.now
+    dt = '2010-01-01 08:00 PST8PDT'
 
     mp = MarketPrice.lookup_si(dt, si)
     mp.obsoleted_dt.should == Float::INFINITY
@@ -201,6 +201,39 @@ describe "Mcfly" do
     lambda {
       omp.save!
     }.should raise_error(ActiveRecord::StatementInvalid)
+  end
+
+  it "whodunnit should set user/o_user on CRUD" do
+    Mcfly.whodunnit = TestUser.new(20)
+
+    si = SecurityInstrument.find_by_name("FN Fix-30 Cash")
+    dt = '2010-01-01 08:00 PST8PDT'
+
+    sleep 1.seconds
+
+    mp = MarketPrice.lookup_si(dt, si)
+    mp.user_id.should == 10
+
+    mp.price = 123
+    mp.save!
+
+    # old version should still have original creator user
+    mp = MarketPrice.lookup_si(dt, si)
+    mp.user_id.should == 10
+    mp.o_user_id.should == 20
+
+    # new version should have new creator
+    mp = MarketPrice.lookup_si('infinity', si)
+    mp.user_id.should == 20
+    mp.o_user_id.should == nil
+
+    rid = mp.id
+
+    Mcfly.whodunnit = TestUser.new(30)
+
+    mp.delete
+    mp = MarketPrice.find(rid)
+    mp.o_user_id.should == 30
   end
 
 end

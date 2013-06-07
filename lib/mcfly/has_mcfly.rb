@@ -32,11 +32,14 @@ module McFly
         # obsoleted_dt.
 
         send :include, InstanceMethods
-        after_initialize :record_init
+        before_validation :record_validation
+
         # FIXME: :created_dt should also be readonly.  However, we set
         # it for debugging purposes.  Should consider making this
-        # readonly once we're in production.
-        attr_readonly :group_id, :obsoleted_dt, :user_id
+        # readonly once we're in production.  Also, :user_id should be
+        # read-only.  We should only set whodunnit and let PostgreSQL
+        # set it.
+        attr_readonly :group_id, :obsoleted_dt, :o_user_id #, :user_id
       end
 
       def mcfly_lookup(name, options = {}, &block)
@@ -78,11 +81,12 @@ module McFly
     end
 
     module InstanceMethods
-      def record_init
-        # Set obsoleted_dt to non NIL to ensure constraints are properly
-        # constructed
-        self.obsoleted_dt = 'infinity' unless self.obsoleted_dt
-        self.user_id ||= Mcfly.whodunnit.try(:id)
+      def record_validation
+        if self.changed?
+          self.user_id = Mcfly.whodunnit.try(:id)
+          self.obsoleted_dt ||= 'infinity'
+        end
+
       end
     end
     

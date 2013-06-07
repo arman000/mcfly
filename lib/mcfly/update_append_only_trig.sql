@@ -13,6 +13,7 @@ BEGIN
   -- ignored.  This is used by DELETE.
   IF NEW.obsoleted_dt <> 'infinity' THEN
      OLD.obsoleted_dt = NEW.obsoleted_dt;
+     OLD.o_user_id = NEW.o_user_id;
      return OLD;
   END IF;
 

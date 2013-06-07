@@ -5,6 +5,7 @@ DECLARE
   rec "%{table}";
   new_id INT4;
   now timestamp;
+  whodunnit int;
 
 BEGIN
   IF OLD.obsoleted_dt <> 'infinity' THEN
@@ -15,6 +16,7 @@ BEGIN
   -- obsoleted.  We return the OLD row so that other field updates are
   -- ignored.  This is used by DELETE.
   IF NEW.obsoleted_dt <> 'infinity' THEN
+     OLD.o_user_id = NEW.o_user_id;
      OLD.obsoleted_dt = NEW.obsoleted_dt;
      return OLD;
   END IF;
@@ -31,7 +33,8 @@ BEGIN
 
   rec.id = new_id;
   rec.group_id = NEW.id;
-  
+  rec.o_user_id = NEW.user_id;
+
   -- FIXME: The following IF/ELSE handles cases where created_dt is
   -- sent in on update. This is only useful for debugging.  Consider
   -- removing the surronding IF (and ELSE part) for production

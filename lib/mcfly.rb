@@ -12,6 +12,9 @@ module Mcfly
   # with models directly.
   def self.whodunnit=(value)
     mcfly_store[:whodunnit] = value
+
+    sval = value.try(:id) || -1
+    ActiveRecord::Base.connection.execute("SET mcfly.whodunnit = #{sval};")
   end
 
   def self.whodunnit

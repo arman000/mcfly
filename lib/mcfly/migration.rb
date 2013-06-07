@@ -14,6 +14,7 @@ class McFlyMigration < ActiveRecord::Migration
       t.timestamp :created_dt, null: false
       t.timestamp :obsoleted_dt, null: false
       t.references :user, null: false
+      t.references :o_user
       block.call(t)
     }
 
