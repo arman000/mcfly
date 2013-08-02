@@ -31,10 +31,10 @@ Or add it to your `Gemfile`, etc.
 ## Usage
 
 To create Mcfly enabled tables, they need to be created using
-`McFly::McFlyMigration` or `McFly::McFlyAppendOnlyMigration` instead
+`Mcfly::McflyMigration` or `Mcfly::McflyAppendOnlyMigration` instead
 of the usual `ActiveRecord::Migration`.
 
-    class CreateSecurityInstruments < McFlyAppendOnlyMigration
+    class CreateSecurityInstruments < McflyAppendOnlyMigration
       def change
         create_table :security_instruments do |t|
           t.string :name, null: false
@@ -43,7 +43,7 @@ of the usual `ActiveRecord::Migration`.
       end
     end
 
-    class CreateMarketPrices < McFlyMigration
+    class CreateMarketPrices < McflyMigration
       def change
         create_table :market_prices do |t|
           t.references :security_instrument, null: false

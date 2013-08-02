@@ -1,6 +1,6 @@
 require 'delorean_lang'
 
-module McFly
+module Mcfly
   module Model
     
     class AssociationValidator < ActiveModel::Validator
@@ -28,7 +28,7 @@ module McFly
         # FIXME: this methods gets a append_only option sometimes.  It
         # needs to add model level validations which prevent update
         # when this option is present. Note that we need to allow
-        # delete.  Deletion of McFly objects obsoletes them by setting
+        # delete.  Deletion of Mcfly objects obsoletes them by setting
         # obsoleted_dt.
 
         send :include, InstanceMethods
@@ -74,7 +74,7 @@ module McFly
       end
 
       def mcfly_belongs_to(name, options = {})
-        validates_with McFly::Model::AssociationValidator, field: name
+        validates_with Mcfly::Model::AssociationValidator, field: name
         belongs_to(name, options)
       end
 

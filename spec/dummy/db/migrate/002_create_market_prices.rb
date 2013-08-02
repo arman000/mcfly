@@ -1,6 +1,6 @@
 require 'mcfly'
 
-class CreateMarketPrices < McFlyMigration
+class CreateMarketPrices < McflyMigration
   def change
     create_table :market_prices do |t|
       t.references :security_instrument, null: false

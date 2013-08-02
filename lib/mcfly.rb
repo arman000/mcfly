@@ -31,7 +31,7 @@ end
 
 ActiveSupport.on_load(:active_record) do
   include Delorean::Model
-  include McFly::Model
+  include Mcfly::Model
 end
 
 ActiveSupport.on_load(:action_controller) do

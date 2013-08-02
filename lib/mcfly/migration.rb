@@ -1,4 +1,4 @@
-class McFlyMigration < ActiveRecord::Migration
+class McflyMigration < ActiveRecord::Migration
   INSERT_TRIG, UPDATE_TRIG, UPDATE_APPEND_ONLY_TRIG, DELETE_TRIG =
     %w{insert_trig update_trig update_append_only_trig delete_trig}.map { |f|
     File.read(File.dirname(__FILE__) + "/#{f}.sql")
@@ -22,7 +22,7 @@ class McFlyMigration < ActiveRecord::Migration
   end
 end
 
-class McFlyAppendOnlyMigration < McFlyMigration
+class McflyAppendOnlyMigration < McflyMigration
   # append-only update trigger disallows updates
   TRIGS = [INSERT_TRIG, UPDATE_APPEND_ONLY_TRIG, DELETE_TRIG]
 end

@@ -1,4 +1,4 @@
-class CreateSecurityInstruments < McFlyAppendOnlyMigration
+class CreateSecurityInstruments < McflyAppendOnlyMigration
   def change
     create_table :security_instruments do |t|
       t.string :name, null: false
