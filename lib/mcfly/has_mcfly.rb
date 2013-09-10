@@ -45,7 +45,8 @@ module Mcfly
       def mcfly_lookup(name, options = {}, &block)
         delorean_fn(name, options) do |ts, *args|
           raise "time cannot be nil" if ts.nil?
-          self.where("obsoleted_dt >= ? AND created_dt < ?", ts, ts).scoping do
+          self.where("#{table_name}.obsoleted_dt >= ? AND " +
+                     "#{table_name}.created_dt < ?", ts, ts).scoping do
             block.call(ts, *args)
           end
         end
