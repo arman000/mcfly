@@ -25,14 +25,11 @@ module Mcfly
 
     module ClassMethods
       def has_mcfly(options = {})
-        # FIXME: this methods gets a append_only option sometimes.  It
-        # needs to add model level validations which prevent update
-        # when this option is present. Note that we need to allow
-        # delete.  Deletion of Mcfly objects obsoletes them by setting
-        # obsoleted_dt.
-
         send :include, InstanceMethods
+
         before_validation :record_validation
+        before_destroy    :allow_destroy if options &&
+          options[:append_only] == true
 
         # FIXME: :created_dt should also be readonly.  However, we set
         # it for debugging purposes.  Should consider making this
@@ -77,6 +74,19 @@ module Mcfly
       def mcfly_belongs_to(name, options = {})
         validates_with Mcfly::Model::AssociationValidator, field: name
         belongs_to(name, options)
+
+        # Store child associations for the parent category
+        # e.g. if HedgeCost is adding a belong_to assoc to HedgeCostCategory
+        # then add HedgeCost and FK to the @@associations array
+        self.reflect_on_all_associations.each do |a|
+          if a.name == name
+            a.klass.class_variable_set(:@@associations, []) unless
+              a.klass.class_variable_defined?(:@@associations)
+
+            a.klass.class_variable_get(:@@associations) << 
+              [a.active_record, a.foreign_key]
+          end
+        end
       end
 
     end
@@ -87,8 +97,23 @@ module Mcfly
           self.user_id = Mcfly.whodunnit.try(:id)
           self.obsoleted_dt ||= 'infinity'
         end
-
       end
+
+      def allow_destroy
+        # checks against registered associations
+        if self.class.class_variable_defined?(:@@associations)
+          self.class.class_variable_get(:@@associations).each do |klass, fk|
+            self.errors.add :base, 
+            "#{self.class.name.demodulize} cannot be deleted " +
+            "because #{klass.name.demodulize} records exist" if
+              klass.where("obsoleted_dt = 'infinity' and
+                                     #{fk} = ?", self.id).count > 0
+          end
+        end
+
+        self.errors.blank?
+      end
+
     end
     
   end

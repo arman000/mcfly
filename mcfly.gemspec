@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
 
   s.require_paths = ["lib"]
 
-  s.add_dependency "rails", "~> 3.2.11"
+  s.add_dependency "rails", "~> 3.2.13"
   s.add_dependency "pg"
 
   # FIXME: Delorean is added here for historical reasons.  It should

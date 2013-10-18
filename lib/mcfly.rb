@@ -1,6 +1,7 @@
 require 'mcfly/migration'
 require 'mcfly/has_mcfly'
 require 'mcfly/controller'
+require 'mcfly/version'
 require 'active_support'
 
 module Mcfly
