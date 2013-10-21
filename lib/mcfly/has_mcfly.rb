@@ -28,8 +28,7 @@ module Mcfly
         send :include, InstanceMethods
 
         before_validation :record_validation
-        before_destroy    :allow_destroy if options &&
-          options[:append_only] == true
+        before_destroy    :allow_destroy if options[:append_only]
 
         # FIXME: :created_dt should also be readonly.  However, we set
         # it for debugging purposes.  Should consider making this
