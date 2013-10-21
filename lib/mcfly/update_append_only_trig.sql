@@ -12,8 +12,8 @@ BEGIN
   -- obsoleted.  We return the OLD row so that other field updates are
   -- ignored.  This is used by DELETE.
   IF NEW.obsoleted_dt <> 'infinity' THEN
-     OLD.obsoleted_dt = NEW.obsoleted_dt;
      OLD.o_user_id = NEW.o_user_id;
+     OLD.obsoleted_dt = NEW.obsoleted_dt;
      return OLD;
   END IF;
 

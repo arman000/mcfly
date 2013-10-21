@@ -1,10 +1,25 @@
 class McflyMigration < ActiveRecord::Migration
-  INSERT_TRIG, UPDATE_TRIG, UPDATE_APPEND_ONLY_TRIG, DELETE_TRIG =
-    %w{insert_trig update_trig update_append_only_trig delete_trig}.map { |f|
+  INSERT_TRIG, UPDATE_TRIG, UPDATE_APPEND_ONLY_TRIG, DELETE_TRIG, CONSTRAINT =
+    %w{
+	insert_trig
+	update_trig
+	update_append_only_trig
+	delete_trig
+	constraint
+    }.map { |f|
     File.read(File.dirname(__FILE__) + "/#{f}.sql")
   }
 
   TRIGS = [INSERT_TRIG, UPDATE_TRIG, DELETE_TRIG]
+
+  def add_sql(table_name, include_const)
+    sql_list = self.class::TRIGS +
+      (include_const ? [self.class::CONSTRAINT] : [])
+
+    sql_list.each { |sql|
+      execute sql % {table: table_name}
+    }
+  end
 
   def create_table(table_name, options = {}, &block)
     super { |t|
@@ -18,7 +33,7 @@ class McflyMigration < ActiveRecord::Migration
       block.call(t)
     }
 
-    self.class::TRIGS.each {|sql| execute sql % {table: table_name}}
+    add_sql(table_name, true)
   end
 end
 

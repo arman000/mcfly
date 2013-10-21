@@ -4,6 +4,7 @@ AS $$
 
 DECLARE
   whodunnit int;
+  now timestamp;
 
 BEGIN
   IF OLD.obsoleted_dt <> 'infinity' THEN
@@ -12,8 +13,10 @@ BEGIN
 
   SHOW mcfly.whodunnit INTO whodunnit;
 
+  now = now();
+
   UPDATE "%{table}"
-  SET "obsoleted_dt" = 'now()', "o_user_id" = whodunnit WHERE id = OLD.id;
+  SET obsoleted_dt = now, o_user_id = whodunnit WHERE id = OLD.id;
 
   RETURN NULL; -- the row is not actually deleted
 END;

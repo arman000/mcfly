@@ -4,7 +4,6 @@ AS $$
 DECLARE
   rec "%{table}";
   new_id INT4;
-  now timestamp;
   whodunnit int;
 
 BEGIN
@@ -27,10 +26,6 @@ BEGIN
   -- new_id is a new primary key that we'll use for the obsoleted row.
   SELECT nextval('"%{table}_id_seq"') INTO new_id;
 
-  -- not sure if PGSQL will return the same value for now() in the
-  -- same transaction.  So, use the same variable to be sure.
-  now = 'now()';
-
   rec.id = new_id;
   rec.group_id = NEW.id;
   rec.o_user_id = NEW.user_id;
@@ -42,8 +37,8 @@ BEGIN
   IF NEW.created_dt = OLD.created_dt THEN
     -- Set the modified row's created_dt.  The obsoleted_dt field was
     -- already infinity, so we don't need to set it.
-    NEW.created_dt = now;
-    rec.obsoleted_dt = now;
+    NEW.created_dt = now();
+    rec.obsoleted_dt = now();
   ELSE
     IF NEW.created_dt <= OLD.created_dt THEN
       RAISE EXCEPTION 'new created_dt must be greater than old';
