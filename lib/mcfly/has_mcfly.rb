@@ -2,7 +2,8 @@ require 'delorean_lang'
 
 module Mcfly
   module Model
-    
+    INFINITIES = Set[Float::INFINITY, 'infinity', 'Infinity']
+
     class AssociationValidator < ActiveModel::Validator
       VALSET = Set[nil, Float::INFINITY, 'infinity']
 
@@ -41,6 +42,10 @@ module Mcfly
       def mcfly_lookup(name, options = {}, &block)
         delorean_fn(name, options) do |ts, *args|
           raise "time cannot be nil" if ts.nil?
+
+          # normalize infinity
+          ts = 'infinity' if Mcfly::Model::INFINITIES.member? ts
+
           self.where("#{table_name}.obsoleted_dt >= ? AND " +
                      "#{table_name}.created_dt < ?", ts, ts).scoping do
             block.call(ts, *args)
@@ -61,7 +66,7 @@ module Mcfly
 
         # add :obsoleted_dt to the uniqueness scope
         attr_names.last[:scope] << :obsoleted_dt
-        
+
         # Set uniqueness error message if not set.  FIXME: need to
         # figure out how to change the base message.  It still
         # prepends the pluralized main attr.
@@ -82,7 +87,7 @@ module Mcfly
             a.klass.class_variable_set(:@@associations, []) unless
               a.klass.class_variable_defined?(:@@associations)
 
-            a.klass.class_variable_get(:@@associations) << 
+            a.klass.class_variable_get(:@@associations) <<
               [a.active_record, a.foreign_key]
           end
         end
@@ -102,7 +107,7 @@ module Mcfly
         # checks against registered associations
         if self.class.class_variable_defined?(:@@associations)
           self.class.class_variable_get(:@@associations).each do |klass, fk|
-            self.errors.add :base, 
+            self.errors.add :base,
             "#{self.class.name.demodulize} cannot be deleted " +
             "because #{klass.name.demodulize} records exist" if
               klass.where("obsoleted_dt = 'infinity' and
@@ -114,6 +119,6 @@ module Mcfly
       end
 
     end
-    
+
   end
 end
