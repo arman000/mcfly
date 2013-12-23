@@ -107,11 +107,11 @@ module Mcfly
         # checks against registered associations
         if self.class.class_variable_defined?(:@@associations)
           self.class.class_variable_get(:@@associations).each do |klass, fk|
-            self.errors.add :base,
-            "#{self.class.name.demodulize} cannot be deleted " +
-            "because #{klass.name.demodulize} records exist" if
-              klass.where("obsoleted_dt = 'infinity' and
-                                     #{fk} = ?", self.id).count > 0
+            self.errors.add :base, 
+            "#{self.class.name.demodulize} can't be deleted " +
+              "because #{klass.name.demodulize} records exist" if
+              klass.where("obsoleted_dt = ? AND #{fk} = ?",
+                          'infinity', self.id).count > 0
           end
         end
 
