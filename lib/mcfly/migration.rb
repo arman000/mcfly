@@ -21,6 +21,12 @@ class McflyMigration < ActiveRecord::Migration
     }
   end
 
+  # TODO: Remove this in 4.0 since we can check direction
+  def migrate(direction)
+    @dir = direction
+    super
+  end
+
   def create_table(table_name, options = {}, &block)
     super { |t|
       t.integer :group_id, null: false
@@ -33,7 +39,7 @@ class McflyMigration < ActiveRecord::Migration
       block.call(t)
     }
 
-    add_sql(table_name, true)
+    add_sql(table_name, true) if @dir == :up
   end
 end
 
