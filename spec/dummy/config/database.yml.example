@@ -1,7 +1,7 @@
 common: &common
   adapter: postgresql
-  username: arman
-  password: arman
+  username: [user]
+  password: [password]
   host: localhost
 
 production:

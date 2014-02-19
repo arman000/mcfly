@@ -21,3 +21,4 @@ tmp
 .ruby-version
 .ruby-gemset
 spec/dummy/log
+spec/dummy/config/database.yml
