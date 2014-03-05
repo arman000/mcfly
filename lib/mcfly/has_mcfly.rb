@@ -1,9 +1,17 @@
 require 'delorean_lang'
 
 module Mcfly
-  module Model
-    INFINITIES = Set[Float::INFINITY, 'infinity', 'Infinity']
+  INFINITIES = Set[Float::INFINITY, 'infinity', 'Infinity']
 
+  def self.is_infinity(pt)
+    Mcfly::INFINITIES.member? pt
+  end
+
+  def self.normalize_infinity(pt)
+    Mcfly::INFINITIES.member?(pt) ? 'infinity' : pt
+  end
+
+  module Model
     class AssociationValidator < ActiveModel::Validator
       VALSET = Set[nil, Float::INFINITY, 'infinity']
 
@@ -43,8 +51,7 @@ module Mcfly
         delorean_fn(name, options) do |ts, *args|
           raise "time cannot be nil" if ts.nil?
 
-          # normalize infinity
-          ts = 'infinity' if Mcfly::Model::INFINITIES.member? ts
+          ts = Mcfly.normalize_infinity(ts)
 
           self.where("#{table_name}.obsoleted_dt >= ? AND " +
                      "#{table_name}.created_dt < ?", ts, ts).scoping do
@@ -98,7 +105,7 @@ module Mcfly
     module InstanceMethods
       def record_validation
         if self.changed?
-          self.user_id = Mcfly.whodunnit.try(:id)
+          self.user_id = Mcfly.whodunnit[:id] rescue nil
           self.obsoleted_dt ||= 'infinity'
         end
       end
@@ -107,7 +114,7 @@ module Mcfly
         # checks against registered associations
         if self.class.class_variable_defined?(:@@associations)
           self.class.class_variable_get(:@@associations).each do |klass, fk|
-            self.errors.add :base, 
+            self.errors.add :base,
             "#{self.class.name.demodulize} can't be deleted " +
               "because #{klass.name.demodulize} records exist" if
               klass.where("obsoleted_dt = ? AND #{fk} = ?",
