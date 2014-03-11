@@ -41,11 +41,3 @@ RSpec.configure do |config|
   #     --seed 1234
   config.order = "random"
 end
-
-class TestUser
-  attr_reader :id
-
-  def initialize(id)
-    @id = id
-  end
-end

@@ -8,16 +8,16 @@ describe "Mcfly" do
   end
 
   before(:each) do
-    Mcfly.whodunnit = TestUser.new(10)
+    Mcfly.whodunnit = {id: 10}
 
     @dts = ['2001-01-01', '2001-01-05', '2001-01-10']
 
     @sis = [
-	    ["FN Fix-30 MBS",		"A"],
-	    ["FN Fix-30 Cash",		"A"],
-	    ["FN Fix-30 MBS Blend",	"A"],
-	    ["FN Fix-30 HB MBS",	"A"],
-	   ]
+            ["FN Fix-30 MBS",           "A"],
+            ["FN Fix-30 Cash",          "A"],
+            ["FN Fix-30 MBS Blend",     "A"],
+            ["FN Fix-30 HB MBS",        "A"],
+           ]
 
     @sis.each_with_index { |(name, sc), i|
       si = SecurityInstrument.new(name: name, settlement_class: sc)

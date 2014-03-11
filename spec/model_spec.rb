@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
 describe "Mcfly" do
   before(:each) do
-    Mcfly.whodunnit = TestUser.new(10)
+    Mcfly.whodunnit = {id: 10}
 
     @old = '2000-01-01'
 
@@ -204,7 +204,7 @@ describe "Mcfly" do
   end
 
   it "whodunnit should set user/o_user on CRUD" do
-    Mcfly.whodunnit = TestUser.new(20)
+    Mcfly.whodunnit = {id: 20}
 
     si = SecurityInstrument.find_by_name("FN Fix-30 Cash")
     dt = '2010-01-01 08:00 PST8PDT'
@@ -229,7 +229,7 @@ describe "Mcfly" do
 
     rid = mp.id
 
-    Mcfly.whodunnit = TestUser.new(30)
+    Mcfly.whodunnit = {id: 30}
 
     mp.delete
     mp = MarketPrice.find(rid)
