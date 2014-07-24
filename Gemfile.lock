@@ -1,10 +1,10 @@
 PATH
   remote: .
   specs:
-    mcfly (0.0.13)
-      delorean_lang
-      pg
-      rails (~> 3.2.13)
+    mcfly (0.0.14)
+      delorean_lang (~> 0.1)
+      pg (~> 0.17)
+      rails (~> 3.2)
 
 GEM
   remote: https://rubygems.org/
@@ -38,9 +38,9 @@ GEM
       multi_json (~> 1.0)
     arel (3.0.3)
     builder (3.0.4)
-    delorean_lang (0.2.1)
-      activerecord (~> 3.2.12)
-      treetop (~> 1.4)
+    delorean_lang (0.3.8)
+      activerecord (~> 3.2)
+      treetop (~> 1.4.8)
     diff-lcs (1.2.5)
     erubis (2.7.0)
     hike (1.2.3)
@@ -53,7 +53,7 @@ GEM
     mime-types (1.25.1)
     multi_json (1.9.0)
     pg (0.17.1)
-    polyglot (0.3.4)
+    polyglot (0.3.5)
     rack (1.4.5)
     rack-cache (1.2)
       rack (>= 0.4)
@@ -105,12 +105,12 @@ GEM
     treetop (1.4.15)
       polyglot
       polyglot (>= 0.3.1)
-    tzinfo (0.3.39)
+    tzinfo (0.3.40)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   mcfly!
-  rspec
-  rspec-rails
+  rspec (~> 2.14)
+  rspec-rails (~> 2.14)

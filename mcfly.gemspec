@@ -11,17 +11,18 @@ Gem::Specification.new do |s|
   s.homepage    = "https://github.com/arman000/mcfly"
   s.summary     = %q{A database table versioning system.}
   s.description = s.summary
-  s.files 	= `git ls-files`.split($\)
+  s.files       = `git ls-files`.split($\)
+  s.licenses      = ['MIT']
 
   s.require_paths = ["lib"]
 
-  s.add_dependency "rails", "~> 3.2.13"
-  s.add_dependency "pg"
+  s.add_dependency "rails", "~> 3.2"
+  s.add_dependency "pg", "~> 0.17"
 
-  # FIXME: Delorean is added here for historical reasons.  It should
-  # be removed as a dependency.
-  s.add_dependency "delorean_lang"
+  # FIXME: Delorean is added here for historical reasons.  Need to
+  # remove the dependency on delorean_fn.
+  s.add_dependency "delorean_lang", '~> 0.1'
 
-  s.add_development_dependency "rspec"
-  s.add_development_dependency "rspec-rails"
+  s.add_development_dependency "rspec", '~> 2.14'
+  s.add_development_dependency "rspec-rails", '~> 2.14'
 end

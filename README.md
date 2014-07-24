@@ -106,7 +106,7 @@ developed at [TWINSUN][]. It has since been modified and enhanced at
 
 ## License
 
-Delorean has been released under the MIT license. Please check the
+Mcfly has been released under the MIT license. Please check the
 [LICENSE][] file for more details.
 
 [license]: https://github.com/rubygems/rubygems.org/blob/master/MIT-LICENSE
