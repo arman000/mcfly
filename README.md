@@ -14,7 +14,7 @@ access the state of Mcfly tables at any point in its history.
 
 * Applications can use Mcfly to time-warp all tables to previous
   points in time.
-  
+
 * Table queries for points in time are symmetric. i.e. queries to
   access data in the present look just like queries available in any
   particular point in time.
@@ -69,12 +69,12 @@ functionality to the class.
       attr_accessible :name, :settlement_class
       validates_presence_of :name, :settlement_class
       mcfly_validates_uniqueness_of :name
-    
+
       mcfly_lookup :lookup, sig: 2 do
         |pt, name|
         find_by_name(name)
       end
-    
+
       mcfly_lookup :lookup_all, sig: 1 do
         |pt| all
       end

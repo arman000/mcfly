@@ -16,13 +16,13 @@ Gem::Specification.new do |s|
 
   s.require_paths = ["lib"]
 
-  s.add_dependency "rails", "~> 3.2"
+  s.add_dependency "activerecord", ">= 3.2"
+
   s.add_dependency "pg", "~> 0.17"
 
   # FIXME: Delorean is added here for historical reasons.  Need to
   # remove the dependency on delorean_fn.
   s.add_dependency "delorean_lang", '~> 0.1'
 
-  s.add_development_dependency "rspec", '~> 2.14'
-  s.add_development_dependency "rspec-rails", '~> 2.14'
+  s.add_development_dependency "rspec-rails", "~> 2.99"
 end
