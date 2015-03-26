@@ -12,11 +12,9 @@ Gem::Specification.new do |s|
   s.summary     = %q{A database table versioning system.}
   s.description = s.summary
   s.files       = `git ls-files`.split($\)
-  s.licenses      = ['MIT']
+  s.licenses    = ['MIT']
 
   s.require_paths = ["lib"]
-
-  s.add_dependency "activerecord", ">= 3.2"
 
   s.add_dependency "pg", "~> 0.17"
 
