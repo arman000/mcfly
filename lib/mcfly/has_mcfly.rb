@@ -1,7 +1,17 @@
 require 'delorean_lang'
 
 module Mcfly
-  INFINITIES = Set[Float::INFINITY, 'infinity', 'Infinity']
+  INFINITIES = Set[Float::INFINITY, 'infinity', 'Infinity'].freeze
+
+  # Mcfly special columns -- FIXME: should "id" be here?
+  COLUMNS = Set[
+                "id",
+                "group_id",
+                "user_id",
+                "created_dt",
+                "obsoleted_dt",
+                "o_user_id",
+               ].freeze
 
   def self.is_infinity(pt)
     Mcfly::INFINITIES.member? pt
@@ -9,6 +19,17 @@ module Mcfly
 
   def self.normalize_infinity(pt)
     Mcfly::INFINITIES.member?(pt) ? 'infinity' : pt
+  end
+
+  def self.has_mcfly?(klass)
+    # check if a class is mcfly enabled -- FIXME: currently this is
+    # checked using MCFLY_UNIQUENESS which is somewhat hacky.
+    klass.const_defined? :MCFLY_UNIQUENESS
+  end
+
+  def self.mcfly_uniqueness(klass)
+    # return uniqueness keys
+    klass.const_get :MCFLY_UNIQUENESS
   end
 
   module Model
@@ -61,12 +82,23 @@ module Mcfly
       end
 
       def mcfly_validates_uniqueness_of(*attr_names)
+        # FIXME: this all looks somewhat hacky since it makes
+        # assumptions about the shape of attr_names.  Should, at
+        # least, add some assertions here to check the assumptions.
+
         # Set MCFLY_UNIQUENESS class constant to the args passed.
         # This is useful for introspection.  FIXME: won't work if
         # mcfly_validates_uniqueness_of is called multiple times on
         # the same class.
-        self.const_set(:MCFLY_UNIQUENESS, attr_names)
+        attr_list =
+          if attr_names.last.is_a?(Hash)
+            attr_names[0..-2] + (attr_names.last[:scope] || [])
+          else
+            attr_names.clone
+          end
+        self.const_set(:MCFLY_UNIQUENESS, attr_list.freeze)
 
+        # start building arguments to validates_uniqueness_of
         attr_names << {} unless attr_names.last.is_a?(Hash)
 
         attr_names.last[:scope] ||= []
