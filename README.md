@@ -66,7 +66,6 @@ functionality to the class.
     class SecurityInstrument < ActiveRecord::Base
       has_mcfly append_only: true
 
-      attr_accessible :name, :settlement_class
       validates_presence_of :name, :settlement_class
       mcfly_validates_uniqueness_of :name
 

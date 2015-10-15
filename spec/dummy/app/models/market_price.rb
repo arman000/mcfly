@@ -3,9 +3,7 @@ require 'mcfly'
 class MarketPrice < ActiveRecord::Base
   has_mcfly
 
-  attr_accessible :security_instrument_id, :coupon, 
-  :settlement_mm, :settlement_yy, :price
-  validates_presence_of :security_instrument_id, :coupon, 
+  validates_presence_of :security_instrument_id, :coupon,
   :settlement_mm, :settlement_yy
 
   mcfly_validates_uniqueness_of :security_instrument_id,
