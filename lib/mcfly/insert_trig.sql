@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION "%{table}_insert" ()
+CREATE OR REPLACE FUNCTION "tr_insert" ()
   RETURNS TRIGGER
 AS $$
 BEGIN
@@ -24,4 +24,4 @@ $$ LANGUAGE plpgsql;
 
 DROP TRIGGER IF EXISTS %{table}_insert ON %{table};
 CREATE TRIGGER "%{table}_insert" BEFORE INSERT ON "%{table}" FOR EACH ROW
-EXECUTE PROCEDURE "%{table}_insert"();
+EXECUTE PROCEDURE "tr_insert"();

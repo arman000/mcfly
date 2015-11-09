@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION "%{table}_update" ()
+CREATE OR REPLACE FUNCTION "tr_update_append_only" ()
   RETURNS TRIGGER
 AS $$
 DECLARE
@@ -23,4 +23,4 @@ $$ LANGUAGE plpgsql;
 
 DROP TRIGGER IF EXISTS %{table}_update ON %{table};
 CREATE TRIGGER "%{table}_update" BEFORE UPDATE ON "%{table}" FOR EACH ROW
-EXECUTE PROCEDURE "%{table}_update"();
+EXECUTE PROCEDURE "tr_update_append_only"();

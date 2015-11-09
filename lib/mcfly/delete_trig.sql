@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION "%{table}_delete" ()
+CREATE OR REPLACE FUNCTION "tr_delete" ()
   RETURNS TRIGGER
 AS $$
 
@@ -15,8 +15,9 @@ BEGIN
 
   now = now();
 
-  UPDATE "%{table}"
-  SET obsoleted_dt = now, o_user_id = whodunnit WHERE id = OLD.id;
+  EXECUTE 'UPDATE ' || TG_RELID::regclass ||
+  ' SET obsoleted_dt = $1, o_user_id = $2 where id = $3.id'
+  USING now, whodunnit, OLD;
 
   RETURN NULL; -- the row is not actually deleted
 END;
@@ -24,4 +25,4 @@ $$ LANGUAGE plpgsql;
 
 DROP TRIGGER IF EXISTS %{table}_delete ON %{table};
 CREATE TRIGGER "%{table}_delete" BEFORE DELETE ON "%{table}" FOR EACH ROW
-EXECUTE PROCEDURE "%{table}_delete"();
+EXECUTE PROCEDURE "tr_delete"();
