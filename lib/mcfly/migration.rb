@@ -1,11 +1,11 @@
 class McflyMigration < ActiveRecord::Migration
   INSERT_TRIG, UPDATE_TRIG, UPDATE_APPEND_ONLY_TRIG, DELETE_TRIG, CONSTRAINT =
     %w{
-	insert_trig
-	update_trig
-	update_append_only_trig
-	delete_trig
-	constraint
+        insert_trig
+        update_trig
+        update_append_only_trig
+        delete_trig
+        constraint
     }.map { |f|
     File.read(File.dirname(__FILE__) + "/#{f}.sql")
   }

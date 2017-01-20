@@ -2,3 +2,6 @@
 -- not infinity (i.e. object is obsoleted).
 ALTER TABLE "%{table}" ADD CONSTRAINT check_o_user
 CHECK ((obsoleted_dt = 'Infinity') = (o_user_id IS NULL));
+
+ALTER TABLE "%{table}" ADD CONSTRAINT check_bad_obsolete
+CHECK (obsoleted_dt > created_dt);
