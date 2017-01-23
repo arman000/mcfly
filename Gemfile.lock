@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    mcfly (0.0.18)
+    mcfly (0.0.19)
       delorean_lang (~> 0.1)
       pg (~> 0.17)
 
