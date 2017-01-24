@@ -9,19 +9,19 @@ describe "Mcfly" do
     @dts = ['2001-01-01', '2001-01-05', '2001-01-10']
 
     @sis = [
-	    ["FN Fix-30 MBS",		"A"],
-	    ["FN Fix-30 Cash",		"A"],
-	    ["FN Fix-30 MBS Blend",	"A"],
-	    ["FN Fix-30 HB MBS",	"A"],
-	    ["FN Fix-15 MBS",		"B"],
-	    ["FN Fix-15 Cash",		"B"],
-	    ["FN Fix-15 HB MBS",	"B"],
-	    ["FN Fix-15 HB Cash",	"B"],
-	    ["FN ARM 3/1 LIBOR",	"D"],
-	    ["FN ARM 3/1 LIBOR Cash",	"D"],
-	    ["FN ARM 5/1 LIBOR",	"D"],
-	    ["FN ARM 5/1 LIBOR Cash",	"D"],
-	   ]
+      ["FN Fix-30 MBS",         "A"],
+      ["FN Fix-30 Cash",        "A"],
+      ["FN Fix-30 MBS Blend",   "A"],
+      ["FN Fix-30 HB MBS",      "A"],
+      ["FN Fix-15 MBS",         "B"],
+      ["FN Fix-15 Cash",        "B"],
+      ["FN Fix-15 HB MBS",      "B"],
+      ["FN Fix-15 HB Cash",     "B"],
+      ["FN ARM 3/1 LIBOR",      "D"],
+      ["FN ARM 3/1 LIBOR Cash", "D"],
+      ["FN ARM 5/1 LIBOR",      "D"],
+      ["FN ARM 5/1 LIBOR Cash", "D"],
+    ]
 
     @sis.each_with_index { |(name, sc), i|
       si = SecurityInstrument.new(name: name, settlement_class: sc)
@@ -226,14 +226,18 @@ describe "Mcfly" do
     mp = MarketPrice.lookup_si('infinity', si)
     mp.user_id.should == 20
     mp.o_user_id.should == nil
+  end
+
+  it "should set o_user on delete" do
+    si = SecurityInstrument.find_by_name("FN Fix-15 HB MBS")
+    mp = MarketPrice.lookup_si('infinity', si)
+    mp.obsoleted_dt.should == Float::INFINITY
+    mp.o_user_id.should == nil
 
     rid = mp.id
-
     Mcfly.whodunnit = {id: 30}
-
     mp.delete
     mp = MarketPrice.find(rid)
     mp.o_user_id.should == 30
   end
-
 end
