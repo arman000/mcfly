@@ -1,4 +1,4 @@
-class McflyMigration < ActiveRecord::Migration
+class McflyMigration < ActiveRecord::Migration[5.1]
   INSERT_TRIG, UPDATE_TRIG, UPDATE_APPEND_ONLY_TRIG, DELETE_TRIG, CONSTRAINT =
     %w{
 	insert_trig
