@@ -1,7 +1,7 @@
 module Mcfly
   module Controller
     def self.included(base)
-      base.before_filter :set_mcfly_whodunnit
+      base.before_action :set_mcfly_whodunnit
     end
 
     # Returns the user who is responsible for any changes that occur.
