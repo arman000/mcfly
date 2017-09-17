@@ -14,7 +14,7 @@ Dummy::Application.configure do
   config.action_controller.perform_caching = false
 
   # Don't care if the mailer can't send
-  config.action_mailer.raise_delivery_errors = false
+  # config.action_mailer.raise_delivery_errors = false
 
   # Print deprecation notices to the Rails logger
   config.active_support.deprecation = :log
@@ -24,13 +24,13 @@ Dummy::Application.configure do
 
   # Log the query plan for queries taking more than this (works
   # with SQLite, MySQL, and PostgreSQL)
-  config.active_record.auto_explain_threshold_in_seconds = 0.5
+  # config.active_record.auto_explain_threshold_in_seconds = 0.5
 
   # Do not compress assets
-  config.assets.compress = false
+  # config.assets.compress = false
 
   # Expands the lines which load the assets
-  config.assets.debug = true
+  # config.assets.debug = true
 
   config.eager_load = false
 end
