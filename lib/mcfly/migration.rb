@@ -1,4 +1,4 @@
-module McflyBaseMigration
+class McflyMigration < ActiveRecord::Migration[4.2]
   INSERT_TRIG, UPDATE_TRIG, UPDATE_APPEND_ONLY_TRIG, DELETE_TRIG, CONSTRAINT =
     %w{
         insert_trig
@@ -43,49 +43,7 @@ module McflyBaseMigration
   end
 end
 
-class McflyMigration51 < ActiveRecord::Migration[5.1]
-  include McflyBaseMigration
-end
-
-class McflyMigration42 < ActiveRecord::Migration[4.2]
-  include McflyBaseMigration
-end
-
-class McflyMigration < ActiveRecord::Migration[5.1]
-  include McflyBaseMigration
-
-  MIGRATION_VERSIONS = {
-    4.2 => McflyMigration42,
-    5.1 => McflyMigration51
-  }.freeze
-
-  class << self
-    def [](key)
-      MIGRATION_VERSIONS.fetch(key)
-    end
-  end
-end
-
-class McflyAppendOnlyMigration51 < McflyMigration[5.1]
-  TRIGS = [INSERT_TRIG, UPDATE_APPEND_ONLY_TRIG, DELETE_TRIG]
-end
-
-class McflyAppendOnlyMigration42 < McflyMigration[4.2]
-  TRIGS = [INSERT_TRIG, UPDATE_APPEND_ONLY_TRIG, DELETE_TRIG]
-end
-
-class McflyAppendOnlyMigration < McflyMigration[5.1]
+class McflyAppendOnlyMigration < McflyMigration
   # append-only update trigger disallows updates
   TRIGS = [INSERT_TRIG, UPDATE_APPEND_ONLY_TRIG, DELETE_TRIG]
-
-  MIGRATION_VERSIONS = {
-    4.2 => McflyAppendOnlyMigration42,
-    5.1 => McflyAppendOnlyMigration51
-  }.freeze
-
-  class << self
-    def [](key)
-      MIGRATION_VERSIONS.fetch(key)
-    end
-  end
 end
