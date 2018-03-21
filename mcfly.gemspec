@@ -22,5 +22,5 @@ Gem::Specification.new do |s|
   # remove the dependency on delorean_fn.
   s.add_dependency "delorean_lang", '~> 0.1'
 
-  s.add_development_dependency "rspec-rails", "~> 2.99"
+  s.add_development_dependency "rspec-rails", "~> 3.0"
 end

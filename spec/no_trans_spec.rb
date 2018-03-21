@@ -1,7 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
 describe "Mcfly" do
-  self.use_transactional_fixtures = false
+  self.use_transactional_tests = false
 
   after(:each) do
     ActiveRecord::Base.connection.execute("TRUNCATE security_instruments;")

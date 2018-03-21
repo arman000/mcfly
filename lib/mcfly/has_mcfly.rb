@@ -44,7 +44,7 @@ module Mcfly
         return if value.nil?
 
         unless VALSET.member?(value.obsoleted_dt)
-          entry.errors[field] = "Obsoleted association value!"
+          entry.errors[field] << "Obsoleted association value!"
         end
       end
     end
@@ -146,11 +146,13 @@ module Mcfly
         # checks against registered associations
         if self.class.class_variable_defined?(:@@associations)
           self.class.class_variable_get(:@@associations).each do |klass, fk|
-            self.errors.add :base,
-            "#{self.class.name.demodulize} can't be deleted " +
-              "because #{klass.name.demodulize} records exist" if
-              klass.where("obsoleted_dt = ? AND #{fk} = ?",
-                          'infinity', self.id).count > 0
+            if klass.where("obsoleted_dt = ? AND #{fk} = ?",
+                           'infinity', self.id).exists?
+              self.errors.add(:base,
+                              "#{self.class.name.demodulize} can't be deleted "\
+                              "because #{klass.name.demodulize} records exist")
+              throw :abort
+            end
           end
         end
 
