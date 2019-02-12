@@ -20,7 +20,7 @@ BEGIN
   END IF;
 
   -- new_id is a new primary key that we'll use for the obsoleted row.
-  SELECT nextval('"' || TG_TABLE_NAME || '_id_seq"') INTO new_id;
+  SELECT nextval(pg_get_serial_sequence(TG_TABLE_NAME, 'id')) INTO new_id;
 
   OLD.id = new_id;
   OLD.group_id = NEW.id;
