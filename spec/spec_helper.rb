@@ -3,12 +3,12 @@ ENV["RAILS_ENV"] ||= 'test'
 require File.expand_path("../dummy/config/environment", __FILE__)
 
 require 'rspec/rails'
-require 'rspec/autorun'
+require 'pry'
 
 Rails.backtrace_cleaner.remove_silencers!
 
 # Run any available migration
-ActiveRecord::Migrator.migrate File.expand_path("../dummy/db/migrate/", __FILE__)
+ActiveRecord::Migration.migrate File.expand_path("../dummy/db/migrate/", __FILE__)
 
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.

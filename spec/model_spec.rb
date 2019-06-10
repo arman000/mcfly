@@ -69,28 +69,28 @@ describe "Mcfly" do
     mp.save!
 
     l = MarketPrice.where("group_id = ?", mp.id).order("obsoleted_dt").all
-    l.length.should == 2
+    expect(l.length).to eq(2)
 
-    l[1].obsoleted_dt.should == Float::INFINITY
-    l[0].obsoleted_dt.should == mp.created_dt
+    expect(l[1].obsoleted_dt).to eq(Float::INFINITY)
+    expect(l[0].obsoleted_dt).to eq(mp.created_dt)
 
     # Make sure that setting an old created_dt fails.
     mp.price = mp.price + 123
     mp.created_dt = mp.created_dt - 1.day
-    lambda {
+    expect {
       mp.save!
-    }.should raise_error(ActiveRecord::StatementInvalid)
+    }.to raise_error(ActiveRecord::StatementInvalid)
   end
 
   it "should make sure that append-only does not allow changes" do
     si = SecurityInstrument.lookup('infinity', "FN Fix-30 MBS")
-    si.settlement_class.should == "A"
+    expect(si.settlement_class).to eq("A")
 
     si.name = "xyz"
 
-    lambda {
+    expect {
       si.save!
-    }.should raise_error(ActiveRecord::StatementInvalid)
+    }.to raise_error(ActiveRecord::StatementInvalid)
 
   end
 
@@ -100,11 +100,11 @@ describe "Mcfly" do
 
     osi = SecurityInstrument.find_by_name("FN Fix-30 MBS")
 
-    (osi.obsoleted_dt - DateTime.now).to_f.abs.should < 100
+    expect((osi.obsoleted_dt - DateTime.now).to_f.abs).to be < 100
 
-    lambda {
+    expect {
       osi.delete
-    }.should raise_error(ActiveRecord::StatementInvalid)
+    }.to raise_error(ActiveRecord::StatementInvalid)
   end
 
   it "should be able to delete append-only items and create a new clone" do
@@ -118,20 +118,21 @@ describe "Mcfly" do
   end
 
   it "should check basic versioning" do
-    SecurityInstrument.lookup_all('infinity').count.should == @sis.count
+    expect(SecurityInstrument.lookup_all('infinity').count).to eq(@sis.count)
 
     @dts.each_with_index { |pt, i|
-      SecurityInstrument.lookup_all(pt + " 12:00 PST8PDT").count.should ==
-      (i+1) * @sis.count/@dts.length
+      expect(SecurityInstrument.lookup_all(pt + " 12:00 PST8PDT").count).to eq(
+        (i + 1) * @sis.count/@dts.length
+      )
     }
 
-    SecurityInstrument.lookup_all(@old).count.should == 0
-    SecurityInstrument.lookup(@old, "FN Fix-30 MBS").should == nil
+    expect(SecurityInstrument.lookup_all(@old).count).to eq(0)
+    expect(SecurityInstrument.lookup(@old, "FN Fix-30 MBS")).to eq(nil)
 
     # all versions
     MarketPrice.count == @sis.length * (@vers+1)
 
-    MarketPrice.lookup_all('infinity').count.should == @sis.count
+    expect(MarketPrice.lookup_all('infinity').count).to eq(@sis.count)
 
     si = SecurityInstrument.first
 
@@ -142,7 +143,7 @@ describe "Mcfly" do
     # previous version of mp
     omp = MarketPrice.lookup_si(odate, si)
 
-    mp.price.should == omp.price + 1
+    expect(mp.price).to eq(omp.price + 1)
   end
 
   it "should test mcfly uniqueness validations" do
@@ -166,9 +167,9 @@ describe "Mcfly" do
     mp2 = new_mp(mp.price + 100)
 
     mp2.created_dt = si.created_dt + 1.day
-    lambda {
+    expect {
       mp2.save!
-    }.should raise_error(ActiveRecord::RecordInvalid)
+    }.to raise_error(ActiveRecord::RecordInvalid)
 
     # now change mp's settlement_mm
     mp.settlement_mm += 1
@@ -185,22 +186,22 @@ describe "Mcfly" do
     dt = '2010-01-01 08:00 PST8PDT'
 
     mp = MarketPrice.lookup_si(dt, si)
-    mp.obsoleted_dt.should == Float::INFINITY
+    expect(mp.obsoleted_dt).to eq(Float::INFINITY)
 
     sleep 1.seconds
 
     mp.delete
 
-    MarketPrice.lookup_si('infinity', si).should == nil
+    expect(MarketPrice.lookup_si('infinity', si)).to eq(nil)
 
     omp = MarketPrice.lookup_si(dt, si)
-    omp.should_not == nil
-    omp.obsoleted_dt.should_not == Float::INFINITY
+    expect(omp).not_to eq(nil)
+    expect(omp.obsoleted_dt).not_to eq(Float::INFINITY)
 
     omp.price = 1010
-    lambda {
+    expect {
       omp.save!
-    }.should raise_error(ActiveRecord::StatementInvalid)
+    }.to raise_error(ActiveRecord::StatementInvalid)
   end
 
   it "whodunnit should set user/o_user on CRUD" do
@@ -212,32 +213,32 @@ describe "Mcfly" do
     sleep 1.seconds
 
     mp = MarketPrice.lookup_si(dt, si)
-    mp.user_id.should == 10
+    expect(mp.user_id).to eq(10)
 
     mp.price = 123
     mp.save!
 
     # old version should still have original creator user
     mp = MarketPrice.lookup_si(dt, si)
-    mp.user_id.should == 10
-    mp.o_user_id.should == 20
+    expect(mp.user_id).to eq(10)
+    expect(mp.o_user_id).to eq(20)
 
     # new version should have new creator
     mp = MarketPrice.lookup_si('infinity', si)
-    mp.user_id.should == 20
-    mp.o_user_id.should == nil
+    expect(mp.user_id).to eq(20)
+    expect(mp.o_user_id).to eq(nil)
   end
 
   it "should set o_user on delete" do
     si = SecurityInstrument.find_by_name("FN Fix-15 HB MBS")
     mp = MarketPrice.lookup_si('infinity', si)
-    mp.obsoleted_dt.should == Float::INFINITY
-    mp.o_user_id.should == nil
+    expect(mp.obsoleted_dt).to eq(Float::INFINITY)
+    expect(mp.o_user_id).to eq(nil)
 
     rid = mp.id
     Mcfly.whodunnit = {id: 30}
     mp.delete
     mp = MarketPrice.find(rid)
-    mp.o_user_id.should == 30
+    expect(mp.o_user_id).to eq(30)
   end
 end

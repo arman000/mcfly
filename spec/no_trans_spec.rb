@@ -39,7 +39,7 @@ describe "Mcfly" do
       (t - SecurityInstrument.find_by_name(name).obsoleted_dt).round
     }
 
-    deltas.should == [8, 6, 4, 2]
+    expect(deltas).to eq([8, 6, 4, 2])
   end
 
 end
