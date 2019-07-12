@@ -44,7 +44,7 @@ module Mcfly
         return if value.nil?
 
         unless VALSET.member?(value.obsoleted_dt)
-          entry.errors[field] << "Obsoleted association value!"
+          entry.errors[field] << "Obsoleted association value of #{field} for #{entry}!"
         end
       end
     end

@@ -241,4 +241,19 @@ describe "Mcfly" do
     mp = MarketPrice.find(rid)
     expect(mp.o_user_id).to eq(30)
   end
+
+  describe '#mcfly_belongs_to' do
+    it 'should raise an error if association is obsoleted' do
+      si = SecurityInstrument.find_by_name("FN Fix-15 HB MBS").dup
+      si.update!(name: 'test')
+      si.destroy!
+      si.reload
+
+      mp = MarketPrice.where(obsoleted_dt: 'infinity').last
+      mp.update(security_instrument: si)
+      expect(mp.errors[:security_instrument].first).to match(
+        /Obsoleted association value of security_instrument for #<MarketPrice/
+      )
+    end
+  end
 end

@@ -12,7 +12,7 @@ class MarketPrice < ActiveRecord::Base
           :settlement_yy,
          ]
 
-  belongs_to :security_instrument
+  mcfly_belongs_to :security_instrument
 
   mcfly_lookup :lookup_si, sig: 2 do
     |pt, si| find_by_security_instrument_id(si.id)
