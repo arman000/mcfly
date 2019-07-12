@@ -68,7 +68,7 @@ module Mcfly
         attr_readonly :group_id, :obsoleted_dt, :o_user_id #, :user_id
       end
 
-      def mcfly_lookup(name, options = {}, &block)
+      def mcfly_lookup(name, options = {})
         delorean_fn(name, options) do |ts, *args|
           raise "time cannot be nil" if ts.nil?
 
@@ -76,7 +76,7 @@ module Mcfly
 
           self.where("#{table_name}.obsoleted_dt >= ? AND " +
                      "#{table_name}.created_dt < ?", ts, ts).scoping do
-            block.call(ts, *args)
+            yield(ts, *args)
           end
         end
       end
