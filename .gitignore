@@ -22,3 +22,12 @@ tmp
 .ruby-gemset
 spec/dummy/log
 spec/dummy/config/database.yml
+
+# Files with command history for docker
+.bash_history.docker
+.pry_history.docker
+
+# Keep empty for for ssh keys in docker
+/.ssh-docker/*
+!/.ssh-docker/.keep
+

@@ -11,7 +11,9 @@ production:
 development:
   <<: *common
   database: mcfly_dev
+  url: <%= ENV['DEVELOPMENT_DATABASE_URL'] %>
 
 test:
   <<: *common
   database: mcfly_test
+  url: <%= ENV['TEST_DATABASE_URL'] %>
