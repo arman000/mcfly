@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Mcfly
   module Controller
     def self.included(base)
@@ -10,7 +12,9 @@ module Mcfly
     # Override this method in your controller to call a different
     # method, e.g. `current_person`, or anything you like.
     def user_for_mcfly
-      current_user rescue nil
+      current_user
+    rescue StandardError
+      nil
     end
 
     # Tells Mcfly who is responsible for any changes that occur.
