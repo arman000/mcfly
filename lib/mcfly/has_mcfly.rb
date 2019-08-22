@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'delorean_lang'
 
 module Mcfly
@@ -5,12 +7,12 @@ module Mcfly
 
   # Mcfly special columns -- FIXME: should "id" be here?
   COLUMNS = Set[
-                "id",
-                "group_id",
-                "user_id",
-                "created_dt",
-                "obsoleted_dt",
-                "o_user_id",
+                'id',
+                'group_id',
+                'user_id',
+                'created_dt',
+                'obsoleted_dt',
+                'o_user_id',
                ].freeze
 
   def self.is_infinity(pt)
@@ -37,7 +39,8 @@ module Mcfly
       VALSET = Set[nil, Float::INFINITY, 'infinity']
 
       def validate(entry)
-        raise "need field option" unless options[:field]
+        raise 'need field option' unless options[:field]
+
         field = options[:field].to_sym
         value = entry.send(field)
 
@@ -65,16 +68,16 @@ module Mcfly
         # readonly once we're in production.  Also, :user_id should be
         # read-only.  We should only set whodunnit and let PostgreSQL
         # set it.
-        attr_readonly :group_id, :obsoleted_dt, :o_user_id #, :user_id
+        attr_readonly :group_id, :obsoleted_dt, :o_user_id # , :user_id
       end
 
       def mcfly_lookup(name, options = {})
         delorean_fn(name, options) do |ts, *args|
-          raise "time cannot be nil" if ts.nil?
+          raise 'time cannot be nil' if ts.nil?
 
           ts = Mcfly.normalize_infinity(ts)
 
-          self.where("#{table_name}.obsoleted_dt >= ? AND " +
+          where("#{table_name}.obsoleted_dt >= ? AND " \
                      "#{table_name}.created_dt < ?", ts, ts).scoping do
             yield(ts, *args)
           end
@@ -96,7 +99,7 @@ module Mcfly
           else
             attr_names.clone
           end
-        self.const_set(:MCFLY_UNIQUENESS, attr_list.freeze)
+        const_set(:MCFLY_UNIQUENESS, attr_list.freeze)
 
         # start building arguments to validates_uniqueness_of
         attr_names << {} unless attr_names.last.is_a?(Hash)
@@ -109,7 +112,7 @@ module Mcfly
         # Set uniqueness error message if not set.  FIXME: need to
         # figure out how to change the base message.  It still
         # prepends the pluralized main attr.
-        attr_names.last[:message] ||= "- record must be unique"
+        attr_names.last[:message] ||= '- record must be unique'
 
         validates_uniqueness_of(*attr_names)
       end
@@ -121,23 +124,26 @@ module Mcfly
         # Store child associations for the parent category
         # e.g. if HedgeCost is adding a belong_to assoc to HedgeCostCategory
         # then add HedgeCost and FK to the @@associations array
-        self.reflect_on_all_associations.each do |a|
-          if a.name == name
-            a.klass.class_variable_set(:@@associations, []) unless
-              a.klass.class_variable_defined?(:@@associations)
+        reflect_on_all_associations.each do |a|
+          next unless a.name == name
 
-            a.klass.class_variable_get(:@@associations) <<
-              [a.active_record, a.foreign_key]
-          end
+          a.klass.class_variable_set(:@@associations, []) unless
+            a.klass.class_variable_defined?(:@@associations)
+
+          a.klass.class_variable_get(:@@associations) <<
+            [a.active_record, a.foreign_key]
         end
       end
-
     end
 
     module InstanceMethods
       def record_validation
-        if self.changed?
-          self.user_id = Mcfly.whodunnit[:id] rescue nil
+        if changed?
+          self.user_id = begin
+                           Mcfly.whodunnit[:id]
+                         rescue StandardError
+                           nil
+                         end
           self.obsoleted_dt ||= 'infinity'
         end
       end
@@ -146,20 +152,18 @@ module Mcfly
         # checks against registered associations
         if self.class.class_variable_defined?(:@@associations)
           self.class.class_variable_get(:@@associations).each do |klass, fk|
-            if klass.where("obsoleted_dt = ? AND #{fk} = ?",
-                           'infinity', self.id).exists?
-              self.errors.add(:base,
-                              "#{self.class.name.demodulize} can't be deleted "\
-                              "because #{klass.name.demodulize} records exist")
-              throw :abort
-            end
+            next unless klass.where("obsoleted_dt = ? AND #{fk} = ?",
+                                    'infinity', id).exists?
+
+            errors.add(:base,
+                       "#{self.class.name.demodulize} can't be deleted "\
+                       "because #{klass.name.demodulize} records exist")
+            throw :abort
           end
         end
 
-        self.errors.blank?
+        errors.blank?
       end
-
     end
-
   end
 end

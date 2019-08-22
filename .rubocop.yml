@@ -1,0 +1,41 @@
+inherit_from: .rubocop_todo.yml
+
+require: rubocop-rails
+
+AllCops:
+  TargetRubyVersion: 2.4.2
+  Exclude:
+    - 'db/**/*'
+    - 'bin/**/*'
+    - 'tmp/**/*'
+    - 'spec/dummy/**/*'
+    - 'public/**/*'
+    - 'bin/{rails,rake}'
+    - 'vendor/**/*'
+    - !ruby/regexp /old_and_unused\.rb$/
+
+# Layout/DotPosition:
+#   EnforcedStyle: 'trailing'
+
+Style/StringLiterals:
+  Enabled: true
+  EnforcedStyle: single_quotes
+
+Metrics/BlockLength:
+  Max: 1236
+  Exclude:
+    - 'spec/**/*'
+
+# Enforces '=> e' variable name
+# Naming/RescuedExceptionsVariableName:
+  # Enabled: false
+
+Lint/UnusedMethodArgument:
+  IgnoreEmptyMethods: true
+  AllowUnusedKeywordArguments: true
+
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+Style/SymbolArray:
+  EnforcedStyle: brackets

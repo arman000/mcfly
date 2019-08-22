@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'mcfly/migration'
 require 'mcfly/has_mcfly'
 require 'mcfly/controller'
@@ -13,7 +15,11 @@ module Mcfly
   # with models directly.
   def self.whodunnit=(value)
     mcfly_store[:whodunnit] = value
-    sval = value[:id] rescue -1
+    sval = begin
+             value[:id]
+           rescue StandardError
+             -1
+           end
     ActiveRecord::Base.connection.execute("SET mcfly.whodunnit = #{sval};")
   end
 
