@@ -3,6 +3,8 @@ class SecurityInstrument < ActiveRecord::Base
   validates_presence_of :name, :settlement_class
   mcfly_validates_uniqueness_of :name
 
+  mcfly_has_many :market_prices
+
   mcfly_lookup :lookup, sig: 2 do
     |pt, name|
     find_by_name(name)
