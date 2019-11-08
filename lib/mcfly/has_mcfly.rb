@@ -134,6 +134,23 @@ module Mcfly
             [a.active_record, a.foreign_key]
         end
       end
+
+      # Consider having two models: A mcfly_belongs_to B. When A is initialized,
+      # model B would have @@associations array, which is used in allow_destroy
+      # callback to prevent deletion. But if model A is not initialized 
+      # (For example with autoloading enabled in dev env) then
+      # records from B can be destroyed even if there are some records in A
+      # associated with them.
+      # That can be fixed by setting mcfly_has_many associations, which would
+      # load associated classes right away.
+      def mcfly_has_many(name, scope = nil, **options, &extension)
+        scope ||= -> { where('obsoleted_dt = ?', 'infinity') }
+
+        has_many(name, scope, **options, &extension).tap do |assoc_list|
+          new_assoc = assoc_list[name.to_s]
+          new_assoc.klass if new_assoc.respond_to?(:klass)
+        end
+      end
     end
 
     module InstanceMethods

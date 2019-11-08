@@ -252,5 +252,30 @@ describe 'Mcfly' do
         /Obsoleted association value of security_instrument for #<MarketPrice/
       )
     end
+
+    it 'should not allow to deleted record of append_only association' do
+      mp = MarketPrice.where(obsoleted_dt: 'infinity').first
+      si = mp.security_instrument
+
+      expect(si.destroy).to be false
+      expect(si.errors.messages[:base]).to eq(
+        [
+          "SecurityInstrument can't be deleted because MarketPrice records exist"
+        ]
+      )
+    end
+  end
+
+  describe '#mcfly_has_many' do
+    it "shouldn't include obsoleted records" do
+      si = SecurityInstrument.find_by(name: 'FN Fix-15 HB MBS')
+
+      prices = MarketPrice.where(security_instrument_id: si.id)
+      obsoleted_prices = prices.where.not(obsoleted_dt: 'infinity')
+      non_obsoleted_prices = prices.where(obsoleted_dt: 'infinity')
+
+      expect(obsoleted_prices.any?).to be true
+      expect(si.market_prices).to eq non_obsoleted_prices
+    end
   end
 end
