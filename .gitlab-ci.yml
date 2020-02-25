@@ -30,14 +30,14 @@ cache:
     - vendor/ruby
 
 variables:
-  BUNDLER_VERSION: "2.0.1"
   DOCKER_AUTH_CONFIG: '{ "credsStore": "ecr-login" }'
   GIT_SSL_NO_VERIFY: "true"
   HEADLESS: "true"
   HEADLESS_WINDOW_SIZE: "1400,1400"
   PGTZ: "America/Los_Angeles"
   POSTGRES_USER: "runner"
-  POSTGRES_PASSWORD: ""
+  POSTGRES_PASSWORD: "runner-password"
+  POSTGRES_HOST_AUTH_METHOD: "trust"
   RAILS_ENV: "test"
   RAILS_DUMP_SCHEMA: "false"
   REPOSITORY_URL: '415596832415.dkr.ecr.us-west-2.amazonaws.com/cm_tech/docker-ruby-ci-image'
