@@ -1,6 +1,6 @@
 require 'mcfly'
 
-class MarketPrice < ActiveRecord::Base
+class MarketPrice < ApplicationRecord
   has_mcfly
 
   validates_presence_of :security_instrument_id, :coupon,

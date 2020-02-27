@@ -19,6 +19,12 @@ before_script:
   # script:
     # - bundle exec rubocop
 
+brakeman:
+  extends: .base-test
+  script:
+      - cp ../../Gemfile.lock Gemfile.lock
+      - bundle exec brakeman spec/dummy
+
 rspec:
   extends: .base-test
   script:

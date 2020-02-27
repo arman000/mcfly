@@ -6,6 +6,7 @@ source 'https://rubygems.org'
 gemspec
 
 group :development, :test do
+  gem 'brakeman'
   # gem 'delorean_lang', path: File.expand_path('../../delorean', __FILE__)
   gem 'pry-byebug'
   gem 'pry-rails'
