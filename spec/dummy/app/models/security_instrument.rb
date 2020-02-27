@@ -1,4 +1,4 @@
-class SecurityInstrument < ActiveRecord::Base
+class SecurityInstrument < ApplicationRecord
   has_mcfly append_only: true
   validates_presence_of :name, :settlement_class
   mcfly_validates_uniqueness_of :name
