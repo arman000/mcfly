@@ -11,11 +11,16 @@ rubocop:
 
 brakeman:
   extends: .brakeman
+  script: bundle exec brakeman spec/dummy
 
 rspec:
   extends:
     - .rspec-all
     - .service-postgres
+  before_script:
+    - cp ./spec/dummy/config/database.ci.yml ./spec/dummy/config/database.yml
+    - cd spec/dummy
+    - RAILS_ENV=test bundle exec rake db:create db:migrate
 
 include:
   - project: 'cm_tech/cm_shared'
