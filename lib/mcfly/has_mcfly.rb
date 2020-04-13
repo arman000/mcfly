@@ -137,7 +137,7 @@ module Mcfly
 
       # Consider having two models: A mcfly_belongs_to B. When A is initialized,
       # model B would have @@associations array, which is used in allow_destroy
-      # callback to prevent deletion. But if model A is not initialized 
+      # callback to prevent deletion. But if model A is not initialized
       # (For example with autoloading enabled in dev env) then
       # records from B can be destroyed even if there are some records in A
       # associated with them.
