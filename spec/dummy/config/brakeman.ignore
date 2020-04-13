@@ -1,6 +1,44 @@
 {
   "ignored_warnings": [
     {
+      "warning_type": "Attribute Restriction",
+      "warning_code": 19,
+      "fingerprint": "188826df8065758b4ada4ccea65ba01c5445189ddebec4412198c6c90a83c701",
+      "check_name": "ModelAttributes",
+      "message": "Mass assignment is not restricted using `attr_accessible`",
+      "file": "app/models/application_record.rb",
+      "line": 1,
+      "link": "https://brakemanscanner.org/docs/warning_types/attribute_restriction/",
+      "code": null,
+      "render_path": null,
+      "location": {
+        "type": "model",
+        "model": "ApplicationRecord"
+      },
+      "user_input": null,
+      "confidence": "High",
+      "note": ""
+    },
+    {
+      "warning_type": "Attribute Restriction",
+      "warning_code": 19,
+      "fingerprint": "223df689e2e1230f753d41bd3a7629b3860fd175f8d9924b9b4f3e57ef56418a",
+      "check_name": "ModelAttributes",
+      "message": "Mass assignment is not restricted using `attr_accessible`",
+      "file": "app/models/market_price.rb",
+      "line": 3,
+      "link": "https://brakemanscanner.org/docs/warning_types/attribute_restriction/",
+      "code": null,
+      "render_path": null,
+      "location": {
+        "type": "model",
+        "model": "MarketPrice"
+      },
+      "user_input": null,
+      "confidence": "High",
+      "note": ""
+    },
+    {
       "warning_type": "Session Setting",
       "warning_code": 29,
       "fingerprint": "715ad9c0d76f57a6a657192574d528b620176a80fec969e2f63c88eacab0b984",
@@ -15,8 +53,27 @@
       "user_input": null,
       "confidence": "High",
       "note": "Dummy application so not an issue"
+    },
+    {
+      "warning_type": "Attribute Restriction",
+      "warning_code": 19,
+      "fingerprint": "78823354f0acdaf3d9e2cb4ed3891f8cae8b0d566dee8bcb5ade8ec1be21b7d4",
+      "check_name": "ModelAttributes",
+      "message": "Mass assignment is not restricted using `attr_accessible`",
+      "file": "app/models/security_instrument.rb",
+      "line": 1,
+      "link": "https://brakemanscanner.org/docs/warning_types/attribute_restriction/",
+      "code": null,
+      "render_path": null,
+      "location": {
+        "type": "model",
+        "model": "SecurityInstrument"
+      },
+      "user_input": null,
+      "confidence": "High",
+      "note": ""
     }
   ],
-  "updated": "2020-02-25 16:10:42 -0800",
-  "brakeman_version": "4.8.0"
+  "updated": "2020-04-12 21:46:47 -0700",
+  "brakeman_version": "4.8.1"
 }
