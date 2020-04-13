@@ -1,51 +1,23 @@
-image: 415596832415.dkr.ecr.us-west-2.amazonaws.com/cm_tech/docker-ruby-ci-image:2.6.3-20191003
+variables:
+  COVERAGE: "true"
+  PG_VERSION: "9.6"
+  RUBY_IMAGE_VERSION: "2.6.3buster"
 
-services:
-  - "postgres:9.6"
+setup:
+  extends: .setup
 
-before_script:
-  - time bundle install --jobs $(nproc) --path vendor "${FLAGS[@]}"
-  - cp ./spec/dummy/config/database.ci.yml ./spec/dummy/config/database.yml
-  - cd spec/dummy && RAILS_ENV=test bundle exec rails db:create db:migrate
-
-.base-test:
-  stage: test
-  # Use only the following CI runners
-  tags:
-    - gitlabci-runner-eks-shared-dev
-
-# rubocop:
-  # extends: .base-test
-  # script:
-    # - bundle exec rubocop
+rubocop:
+  extends: .rubocop
 
 brakeman:
-  extends: .base-test
-  script:
-      - cp ../../Gemfile.lock Gemfile.lock
-      - bundle exec brakeman spec/dummy
+  extends: .brakeman
 
 rspec:
-  extends: .base-test
-  script:
-    - bundle exec rspec
+  extends:
+    - .rspec-all
+    - .service-postgres
 
-cache:
-  key: 'mcfly_bundler_cache'
-  paths:
-    - vendor/ruby
-
-variables:
-  DOCKER_AUTH_CONFIG: '{ "credsStore": "ecr-login" }'
-  GIT_SSL_NO_VERIFY: "true"
-  HEADLESS: "true"
-  HEADLESS_WINDOW_SIZE: "1400,1400"
-  PGTZ: "America/Los_Angeles"
-  POSTGRES_USER: "runner"
-  POSTGRES_PASSWORD: "runner-password"
-  POSTGRES_HOST_AUTH_METHOD: "trust"
-  RAILS_ENV: "test"
-  RAILS_DUMP_SCHEMA: "false"
-  REPOSITORY_URL: '415596832415.dkr.ecr.us-west-2.amazonaws.com/cm_tech/docker-ruby-ci-image'
-  RSPEC_AUTO_RETRY_JS: "true"
-
+include:
+  - project: 'cm_tech/cm_shared'
+    ref: shared_gitlab_ci
+    file: '/.gitlab/ci/defaults.yml'
