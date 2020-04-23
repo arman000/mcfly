@@ -1,7 +1,7 @@
 variables:
   COVERAGE: "true"
   PG_VERSION: "9.6"
-  RUBY_IMAGE_VERSION: "2.6.3buster"
+  RUBY_IMAGE_VERSION: "latest"
 
 setup:
   extends: .setup
