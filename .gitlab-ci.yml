@@ -1,6 +1,6 @@
 variables:
   COVERAGE: "true"
-  PG_VERSION: "9.6"
+  PG_IMAGE_VERSION: "11"
   RUBY_IMAGE_VERSION: "latest"
 
 setup:
