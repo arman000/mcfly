@@ -23,5 +23,5 @@ rspec:
     - bundle exec rake db:create db:migrate
 
 include:
-  - project: 'cm_tech/cm_shared'
+  - project: 'cm_tech/cm_gitlab_ci'
     file: '/.gitlab/ci/defaults.yml'
