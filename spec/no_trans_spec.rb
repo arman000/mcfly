@@ -1,35 +1,37 @@
 # frozen_string_literal: true
 
-require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
+require 'spec_helper'
 
 describe 'Mcfly' do
   self.use_transactional_tests = false
 
-  after(:each) do
-    ActiveRecord::Base.connection.execute('TRUNCATE security_instruments;')
-  end
-
-  before(:each) do
-    Mcfly.whodunnit = { id: 10 }
-
-    @dts = %w[2001-01-01 2001-01-05 2001-01-10]
-
-    @sis = [
+  let(:sis) do
+    [
       ['FN Fix-30 MBS', 'A'],
       ['FN Fix-30 Cash',          'A'],
       ['FN Fix-30 MBS Blend',     'A'],
-      ['FN Fix-30 HB MBS',        'A']
+      ['FN Fix-30 HB MBS',        'A'],
     ]
+  end
 
-    @sis.each_with_index do |(name, sc), i|
+  let(:dts) { ['2001-01-01', '2001-01-05', '2001-01-10'] }
+
+  after do
+    ActiveRecord::Base.connection.execute('TRUNCATE security_instruments;')
+  end
+
+  before do
+    Mcfly.whodunnit = { id: 10 }
+
+    sis.each_with_index do |(name, sc), i|
       si = SecurityInstrument.new(name: name, settlement_class: sc)
-      si.created_dt = @dts[i % @dts.length]
+      si.created_dt = dts[i % dts.length]
       si.save!
     end
   end
 
   it 'deleted append-only records should have reasonable obsoleted_dt' do
-    @sis[0..3].each do |name, _st|
+    sis[0..3].each do |name, _st|
       osi = SecurityInstrument.find_by(name: name)
       osi.destroy
       # p ActiveRecord::Base.connection.execute("select now();").first
@@ -37,7 +39,7 @@ describe 'Mcfly' do
     end
     t = Time.zone.now
 
-    deltas = @sis[0..3].map do |name, _st|
+    deltas = sis[0..3].map do |name, _st|
       (t - SecurityInstrument.find_by(name: name).obsoleted_dt).round
     end
 

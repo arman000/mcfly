@@ -17,9 +17,11 @@ ActiveRecord::Migration.migrate File.expand_path('dummy/db/migrate', __dir__)
 Dir[Rails.root.join('spec/support/**/*.rb')].sort.each { |f| require f }
 
 # global setup block resetting Thread.current
-class ActiveSupport::TestCase
-  teardown do
-    Thread.current[:mcfly] = nil
+module ActiveSupport
+  class TestCase
+    teardown do
+      Thread.current[:mcfly] = nil
+    end
   end
 end
 

@@ -6,11 +6,12 @@ source 'https://rubygems.org'
 gemspec
 
 group :development, :test do
+  group :cmit do
+    gem 'cm_shared', git: 'https://gitlab.pnmac.com/cm_tech/cm_shared.git'
+    # gem 'cm_shared', path: File.expand_path('../cm_shared', __dir__)
+    # gem 'delorean_lang', path: File.expand_path('../delorean', __dir__)
+  end
   gem 'brakeman'
-  # gem 'delorean_lang', path: File.expand_path('../../delorean', __FILE__)
-  gem 'pry-byebug'
   gem 'pry-rails'
   gem 'rspec-instafail', require: false
-  gem 'rubocop', require: false
-  gem 'rubocop-rails', require: false
 end

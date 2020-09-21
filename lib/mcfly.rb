@@ -16,18 +16,16 @@ module Mcfly
   def self.whodunnit=(value)
     mcfly_store[:whodunnit] = value
     sval = begin
-             value[:id]
-           rescue StandardError
-             -1
-           end
+      value[:id]
+    rescue StandardError
+      -1
+    end
     ActiveRecord::Base.connection.execute("SET mcfly.whodunnit = #{sval};")
   end
 
   def self.whodunnit
     mcfly_store[:whodunnit]
   end
-
-  private
 
   # Thread-safe hash to hold Mcfly's data.
   def self.mcfly_store
