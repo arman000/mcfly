@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'active_support/deprecation'
 require 'delorean_lang'
 
 module Mcfly
@@ -15,19 +16,27 @@ module Mcfly
                 'o_user_id',
                ].freeze
 
-  def self.is_infinity(pt)
+  HasMcflyDeprecator = ActiveSupport::Deprecation.new('1.1.0', 'Mcfly')
+
+  def self.infinity?(pt)
     Mcfly::INFINITIES.member? pt
   end
+  singleton_class.send(:alias_method, :is_infinity, :infinity?)
 
   def self.normalize_infinity(pt)
     Mcfly::INFINITIES.member?(pt) ? 'infinity' : pt
   end
 
-  def self.has_mcfly?(klass)
+  def self.mcfly?(klass)
     # check if a class is mcfly enabled -- FIXME: currently this is
     # checked using MCFLY_UNIQUENESS which is somewhat hacky.
     klass.const_defined? :MCFLY_UNIQUENESS
   end
+
+  def self.has_mcfly?(klass) # rubocop:todo Naming/PredicateName
+    mcfly?(klass)
+  end
+  deprecate has_mcfly?: :mcfly?, deprecator: HasMcflyDeprecator
 
   def self.mcfly_uniqueness(klass)
     # return uniqueness keys
@@ -45,10 +54,9 @@ module Mcfly
         value = entry.send(field)
 
         return if value.nil?
+        return if VALSET.member?(value.obsoleted_dt)
 
-        unless VALSET.member?(value.obsoleted_dt)
-          entry.errors[field] << "Obsoleted association value of #{field} for #{entry}!"
-        end
+        entry.errors[field] << "Obsoleted association value of #{field} for #{entry}!"
       end
     end
 
@@ -57,7 +65,12 @@ module Mcfly
     end
 
     module ClassMethods
-      def has_mcfly(options = {})
+      def has_mcfly(options = {}) # rubocop:todo Naming/PredicateName
+        mcfly(options)
+      end
+      deprecate has_mcfly: :mcfly, deprecator: HasMcflyDeprecator
+
+      def mcfly(options = {})
         send :include, InstanceMethods
 
         before_validation :record_validation
@@ -78,7 +91,10 @@ module Mcfly
           ts = Mcfly.normalize_infinity(ts)
 
           where("#{table_name}.obsoleted_dt >= ? AND " \
-                     "#{table_name}.created_dt < ?", ts, ts).scoping do
+                     "#{table_name}.created_dt < ?",
+                ts,
+                ts,
+               ).scoping do
             yield(ts, *args)
           end
         end
@@ -93,12 +109,11 @@ module Mcfly
         # This is useful for introspection.  FIXME: won't work if
         # mcfly_validates_uniqueness_of is called multiple times on
         # the same class.
-        attr_list =
-          if attr_names.last.is_a?(Hash)
-            attr_names[0..-2] + (attr_names.last[:scope] || [])
-          else
-            attr_names.clone
-          end
+        attr_list = if attr_names.last.is_a?(Hash)
+                      attr_names[0..-2] + (attr_names.last[:scope] || [])
+                    else
+                      attr_names.clone
+                    end
         const_set(:MCFLY_UNIQUENESS, attr_list.freeze)
 
         # start building arguments to validates_uniqueness_of
@@ -119,7 +134,7 @@ module Mcfly
 
       def mcfly_belongs_to(name, options = {})
         validates_with Mcfly::Model::AssociationValidator, field: name
-        belongs_to(name, options)
+        belongs_to(name, **options)
 
         # Store child associations for the parent category
         # e.g. if HedgeCost is adding a belong_to assoc to HedgeCostCategory
@@ -127,11 +142,10 @@ module Mcfly
         reflect_on_all_associations.each do |a|
           next unless a.name == name
 
-          a.klass.class_variable_set(:@@associations, []) unless
-            a.klass.class_variable_defined?(:@@associations)
-
-          a.klass.class_variable_get(:@@associations) <<
-            [a.active_record, a.foreign_key]
+          a.klass.class_eval(<<~RUBY, __FILE__, __LINE__ + 1)
+            @@associations ||= []
+            @@associations << [a.active_record, a.foreign_key]
+          RUBY
         end
       end
 
@@ -155,26 +169,32 @@ module Mcfly
 
     module InstanceMethods
       def record_validation
-        if changed?
-          self.user_id = begin
-                           Mcfly.whodunnit[:id]
-                         rescue StandardError
-                           nil
-                         end
-          self.obsoleted_dt ||= 'infinity'
+        return unless changed?
+
+        self.user_id = begin
+          Mcfly.whodunnit[:id]
+        rescue StandardError
+          nil
         end
+
+        self.obsoleted_dt ||= 'infinity'
       end
 
       def allow_destroy
         # checks against registered associations
         if self.class.class_variable_defined?(:@@associations)
           self.class.class_variable_get(:@@associations).each do |klass, fk|
-            next unless klass.where("obsoleted_dt = ? AND #{fk} = ?",
-                                    'infinity', id).exists?
+            next unless klass.exists?([
+                                        "obsoleted_dt = ? AND #{fk} = ?",
+                                        'infinity',
+                                        id,
+                                      ],
+                                     )
 
             errors.add(:base,
                        "#{self.class.name.demodulize} can't be deleted "\
-                       "because #{klass.name.demodulize} records exist")
+                       "because #{klass.name.demodulize} records exist",
+                      )
             throw :abort
           end
         end

@@ -1,14 +1,13 @@
 # frozen_string_literal: true
 
 class McflyMigration < ActiveRecord::Migration[4.2]
-  INSERT_TRIG, UPDATE_TRIG, UPDATE_APPEND_ONLY_TRIG, DELETE_TRIG, CONSTRAINT =
-    %w[
-      insert_trig
-      update_trig
-      update_append_only_trig
-      delete_trig
-      constraint
-    ].map do |f|
+  INSERT_TRIG, UPDATE_TRIG, UPDATE_APPEND_ONLY_TRIG, DELETE_TRIG, CONSTRAINT = [
+    'insert_trig',
+    'update_trig',
+    'update_append_only_trig',
+    'delete_trig',
+    'constraint',
+  ].map do |f|
     File.read(File.dirname(__FILE__) + "/#{f}.sql")
   end
 
@@ -38,7 +37,7 @@ class McflyMigration < ActiveRecord::Migration[4.2]
       t.timestamp :obsoleted_dt, null: false
       t.references :user, null: false
       t.references :o_user
-      block.call(t)
+      yield(t)
     end
 
     add_sql(table_name, true) if @dir == :up

@@ -1,16 +1,10 @@
 # frozen_string_literal: true
 
-require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
+require 'spec_helper'
 
 describe 'Mcfly' do
-  before(:each) do
-    Mcfly.whodunnit = { id: 10 }
-
-    @old = '2000-01-01'
-
-    @dts = %w[2001-01-01 2001-01-05 2001-01-10]
-
-    @sis = [
+  let(:sis) do
+    [
       ['FN Fix-30 MBS',         'A'],
       ['FN Fix-30 Cash',        'A'],
       ['FN Fix-30 MBS Blend',   'A'],
@@ -22,30 +16,34 @@ describe 'Mcfly' do
       ['FN ARM 3/1 LIBOR',      'D'],
       ['FN ARM 3/1 LIBOR Cash', 'D'],
       ['FN ARM 5/1 LIBOR',      'D'],
-      ['FN ARM 5/1 LIBOR Cash', 'D']
+      ['FN ARM 5/1 LIBOR Cash', 'D'],
     ]
+  end
+  let(:dts) { ['2001-01-01', '2001-01-05', '2001-01-10'] }
+  let(:old) { '2000-01-01' }
+  let(:vers) { 5 }
 
-    @sis.each_with_index do |(name, sc), i|
+  before do
+    Mcfly.whodunnit = { id: 10 }
+
+    sis.each_with_index do |(name, sc), i|
       si = SecurityInstrument.new(name: name, settlement_class: sc)
-      si.created_dt = @dts[i % @dts.length]
+      si.created_dt = dts[i % dts.length]
       si.save!
-    end
 
-    @sis.each_with_index do |(name, _sc), i|
       ii = i + 1
       si = SecurityInstrument.find_by(name: name)
       mp = MarketPrice.new(security_instrument_id: si.id,
                            coupon: ii * 1.1,
                            settlement_mm: ii,
                            settlement_yy: 2000 + ii,
-                           price: ii)
+                           price: ii,
+                          )
       mp.created_dt = si.created_dt
       mp.save!
 
-      @vers = 5
-
       # create 5 additional verions for each mp
-      (1..@vers).each do
+      (1..vers).each do
         mp.price = mp.price + 1
         mp.created_dt = mp.created_dt + 1.day
         mp.save!
@@ -53,13 +51,14 @@ describe 'Mcfly' do
     end
   end
 
-  it 'should update obsoleted_dt properly when created_dt is set' do
+  it 'updates obsoleted_dt properly when created_dt is set' do
     si = SecurityInstrument.first
     mp = MarketPrice.new(security_instrument_id: si.id,
                          coupon: 2.0,
                          settlement_mm: 1,
                          settlement_yy: 2013,
-                         price: 100.256)
+                         price: 100.256,
+                        )
     mp.created_dt = si.created_dt
     mp.save!
 
@@ -81,7 +80,7 @@ describe 'Mcfly' do
     end.to raise_error(ActiveRecord::StatementInvalid)
   end
 
-  it 'should make sure that append-only does not allow changes' do
+  it 'makes sure that append-only does not allow changes' do
     si = SecurityInstrument.lookup('infinity', 'FN Fix-30 MBS')
     expect(si.settlement_class).to eq('A')
 
@@ -92,7 +91,7 @@ describe 'Mcfly' do
     end.to raise_error(ActiveRecord::StatementInvalid)
   end
 
-  it 'should be able to delete append-only items' do
+  it 'is able to delete append-only items' do
     osi = SecurityInstrument.find_by(name: 'FN Fix-30 MBS')
     osi.delete
 
@@ -105,32 +104,33 @@ describe 'Mcfly' do
     end.to raise_error(ActiveRecord::StatementInvalid)
   end
 
-  it 'should be able to delete append-only items and create a new clone' do
+  it 'is able to delete append-only items and create a new clone' do
     osi = SecurityInstrument.find_by(name: 'FN Fix-30 MBS')
     osi.delete
 
     # now try to add a clone of si
     si = SecurityInstrument.new(name: osi.name,
-                                settlement_class: osi.settlement_class)
+                                settlement_class: osi.settlement_class,
+                               )
     si.save!
   end
 
-  it 'should check basic versioning' do
-    expect(SecurityInstrument.lookup_all('infinity').count).to eq(@sis.count)
+  it 'checks basic versioning' do
+    expect(SecurityInstrument.lookup_all('infinity').count).to eq(sis.count)
 
-    @dts.each_with_index do |pt, i|
-      expect(SecurityInstrument.lookup_all(pt + ' 12:00 PST8PDT').count).to eq(
-        (i + 1) * @sis.count / @dts.length
+    dts.each_with_index do |pt, i|
+      expect(SecurityInstrument.lookup_all("#{pt} 12:00 PST8PDT").count).to eq(
+        (i + 1) * sis.count / dts.length,
       )
     end
 
-    expect(SecurityInstrument.lookup_all(@old).count).to eq(0)
-    expect(SecurityInstrument.lookup(@old, 'FN Fix-30 MBS')).to eq(nil)
+    expect(SecurityInstrument.lookup_all(old).count).to eq(0)
+    expect(SecurityInstrument.lookup(old, 'FN Fix-30 MBS')).to eq(nil)
 
     # all versions
-    MarketPrice.count == @sis.length * (@vers + 1)
+    expect(MarketPrice.count).to eq(sis.length * (vers + 1))
 
-    expect(MarketPrice.lookup_all('infinity').count).to eq(@sis.count)
+    expect(MarketPrice.lookup_all('infinity').count).to eq(sis.count)
 
     si = SecurityInstrument.first
 
@@ -144,14 +144,15 @@ describe 'Mcfly' do
     expect(mp.price).to eq(omp.price + 1)
   end
 
-  it 'should test mcfly uniqueness validations' do
+  it 'tests mcfly uniqueness validations' do
     def new_mp(price)
       si = SecurityInstrument.first
       MarketPrice.new(security_instrument_id: si.id,
                       coupon: 2.0,
                       settlement_mm: 1,
                       settlement_yy: 2013,
-                      price: price)
+                      price: price,
+                     )
     end
 
     si = SecurityInstrument.first
@@ -178,7 +179,7 @@ describe 'Mcfly' do
     mp3.save!
   end
 
-  it 'should be able to delete objects' do
+  it 'is able to delete objects' do
     si = SecurityInstrument.find_by(name: 'FN Fix-30 Cash')
     dt = '2010-01-01 08:00 PST8PDT'
 
@@ -226,7 +227,7 @@ describe 'Mcfly' do
     expect(mp.o_user_id).to eq(nil)
   end
 
-  it 'should set o_user on delete' do
+  it 'sets o_user on delete' do
     si = SecurityInstrument.find_by(name: 'FN Fix-15 HB MBS')
     mp = MarketPrice.lookup_si('infinity', si)
     expect(mp.obsoleted_dt).to eq(Float::INFINITY)
@@ -240,7 +241,7 @@ describe 'Mcfly' do
   end
 
   describe '#mcfly_belongs_to' do
-    it 'should raise an error if association is obsoleted' do
+    it 'raises an error if association is obsoleted' do
       si = SecurityInstrument.find_by(name: 'FN Fix-15 HB MBS').dup
       si.update!(name: 'test')
       si.destroy!
@@ -249,25 +250,25 @@ describe 'Mcfly' do
       mp = MarketPrice.where(obsoleted_dt: 'infinity').last
       mp.update(security_instrument: si)
       expect(mp.errors[:security_instrument].first).to match(
-        /Obsoleted association value of security_instrument for #<MarketPrice/
+        /Obsoleted association value of security_instrument for #<MarketPrice/,
       )
     end
 
-    it 'should not allow to deleted record of append_only association' do
+    it 'does not allow to deleted record of append_only association' do
       mp = MarketPrice.where(obsoleted_dt: 'infinity').first
       si = mp.security_instrument
 
       expect(si.destroy).to be false
       expect(si.errors.messages[:base]).to eq(
         [
-          "SecurityInstrument can't be deleted because MarketPrice records exist"
-        ]
+          "SecurityInstrument can't be deleted because MarketPrice records exist",
+        ],
       )
     end
   end
 
   describe '#mcfly_has_many' do
-    it "shouldn't include obsoleted records" do
+    it 'does not include obsoleted records' do
       si = SecurityInstrument.find_by(name: 'FN Fix-15 HB MBS')
 
       prices = MarketPrice.where(security_instrument_id: si.id)

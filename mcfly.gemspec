@@ -21,10 +21,10 @@ Gem::Specification.new do |s|
   s.licenses    = ['MIT']
 
   s.require_paths = ['lib']
-
-  s.add_dependency 'pg'
+  s.required_ruby_version = '>= 2.5.7'
 
   s.add_dependency 'delorean_lang'
+  s.add_dependency 'pg'
 
   s.add_development_dependency 'rspec-rails'
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateSecurityInstruments < McflyAppendOnlyMigration
   def change
     create_table :security_instruments do |t|
