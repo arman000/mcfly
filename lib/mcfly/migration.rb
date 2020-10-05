@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 
-class McflyMigration < ActiveRecord::Migration[4.2]
+require 'active_record'
+
+AR_VERSION = ActiveRecord::VERSION
+MIGRATION_VERSION = "#{AR_VERSION::MAJOR}.#{AR_VERSION::MINOR}"
+
+class McflyMigration < ActiveRecord::Migration[MIGRATION_VERSION]
   INSERT_TRIG, UPDATE_TRIG, UPDATE_APPEND_ONLY_TRIG, DELETE_TRIG, CONSTRAINT = [
     'insert_trig',
     'update_trig',
@@ -22,7 +27,6 @@ class McflyMigration < ActiveRecord::Migration[4.2]
     end
   end
 
-  # TODO: Remove this in 4.0 since we can check direction
   def migrate(direction)
     @dir = direction
     super

@@ -19,8 +19,7 @@ rspec:
     - .rspec-all
   before_script:
     - cp ./spec/dummy/config/database.ci.yml ./spec/dummy/config/database.yml
-    - cd spec/dummy
-    - bundle exec rake db:create db:migrate
+    - (cd spec/dummy; bundle exec rake db:create db:migrate)
 
 include:
   - project: 'cm_tech/cm_gitlab_ci'

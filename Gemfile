@@ -14,4 +14,5 @@ group :development, :test do
   gem 'brakeman'
   gem 'pry-rails'
   gem 'rspec-instafail', require: false
+  gem 'simplecov'
 end

@@ -16,26 +16,31 @@ ActiveRecord::Schema.define(version: 2) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'plpgsql'
 
-  create_table 'market_prices', id: :serial, force: :cascade do |t|
+  create_table 'market_prices', force: :cascade do |t|
     t.integer 'group_id', null: false
     t.datetime 'created_dt', null: false
     t.datetime 'obsoleted_dt', null: false
-    t.integer 'user_id', null: false
-    t.integer 'o_user_id'
-    t.integer 'security_instrument_id', null: false
+    t.bigint 'user_id', null: false
+    t.bigint 'o_user_id'
+    t.bigint 'security_instrument_id', null: false
     t.decimal 'coupon', null: false
     t.integer 'settlement_mm', null: false
     t.integer 'settlement_yy', null: false
     t.decimal 'price'
+    t.index ['o_user_id'], name: 'index_market_prices_on_o_user_id'
+    t.index ['security_instrument_id'], name: 'index_market_prices_on_security_instrument_id'
+    t.index ['user_id'], name: 'index_market_prices_on_user_id'
   end
 
-  create_table 'security_instruments', id: :serial, force: :cascade do |t|
+  create_table 'security_instruments', force: :cascade do |t|
     t.integer 'group_id', null: false
     t.datetime 'created_dt', null: false
     t.datetime 'obsoleted_dt', null: false
-    t.integer 'user_id', null: false
-    t.integer 'o_user_id'
+    t.bigint 'user_id', null: false
+    t.bigint 'o_user_id'
     t.string 'name', null: false
     t.string 'settlement_class', limit: 1, null: false
+    t.index ['o_user_id'], name: 'index_security_instruments_on_o_user_id'
+    t.index ['user_id'], name: 'index_security_instruments_on_user_id'
   end
 end
