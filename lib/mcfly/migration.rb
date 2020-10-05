@@ -2,10 +2,7 @@
 
 require 'active_record'
 
-AR_VERSION = ActiveRecord::VERSION
-MIGRATION_VERSION = "#{AR_VERSION::MAJOR}.#{AR_VERSION::MINOR}"
-
-class McflyMigration < ActiveRecord::Migration[MIGRATION_VERSION]
+class McflyMigration < ActiveRecord::Migration[4.2]
   INSERT_TRIG, UPDATE_TRIG, UPDATE_APPEND_ONLY_TRIG, DELETE_TRIG, CONSTRAINT = [
     'insert_trig',
     'update_trig',
