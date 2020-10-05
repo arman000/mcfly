@@ -1,9 +1,13 @@
 # frozen_string_literal: true
 
+# Requires supporting ruby files with custom matchers and macros, etc,
+# in spec/support/ and its subdirectories.
+Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].sort.each { |f| require f }
+
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 ENV['RAILS_ENV'] ||= 'test'
 require File.expand_path('dummy/config/environment', __dir__)
-
+require 'mcfly'
 require 'rspec/rails'
 require 'pry'
 
@@ -11,10 +15,6 @@ Rails.backtrace_cleaner.remove_silencers!
 
 # Run any available migration
 ActiveRecord::Migration.migrate File.expand_path('dummy/db/migrate', __dir__)
-
-# Requires supporting ruby files with custom matchers and macros, etc,
-# in spec/support/ and its subdirectories.
-Dir[Rails.root.join('spec/support/**/*.rb')].sort.each { |f| require f }
 
 # global setup block resetting Thread.current
 module ActiveSupport
