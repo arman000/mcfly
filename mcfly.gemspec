@@ -1,12 +1,15 @@
 # frozen_string_literal: true
 
-$LOAD_PATH.push File.expand_path('lib', __dir__)
+require_relative 'lib/mcfly/version'
 
-require 'mcfly/version'
-
-git_tracked_files = `git ls-files`.split($OUTPUT_RECORD_SEPARATOR)
-gem_ignored_files = `git ls-files -i -X .gemignore`.split($OUTPUT_RECORD_SEPARATOR)
-files = git_tracked_files - gem_ignored_files
+files = Dir[
+  'lib/**/*',
+  'Gemfile',
+  'mcfly.gemspec',
+  'MIT-LICENSE',
+  'Rakefile',
+  'README.md',
+]
 
 # Describe your gem and declare its dependencies:
 Gem::Specification.new do |s|
